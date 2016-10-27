@@ -1,3 +1,8 @@
 pangloss/vim-javascript
 mxw/vim-jsx
 scrooloose/nerdtree
+altercation/vim-colors-solarized
+tpope/vim-fugitive
+tpope/vim-surround
+Valloric/YouCompleteMe
+luochen1990/rainbow

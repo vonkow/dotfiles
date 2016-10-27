@@ -39,5 +39,8 @@ ln -s $DOTFILES/vimrc ~/.vimrc
 
 # SETUP TMUX
 
+# Grab Tmux Plugin Manager
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 ## Link our tmux config
-ln -s $DOTFILES/tmux.conf ~/.tmux.conf
+ln -s $DOTFILES/tmux.config ~/.tmux.conf
