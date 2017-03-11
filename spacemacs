@@ -47,6 +47,7 @@ values."
      markdown
      org
      (shell :variables
+            shell-default-shell 'multi-term
             shell-default-height 30
             shell-default-position 'bottom)
      ;; spell-checking
@@ -302,6 +303,8 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; org mode
   (with-eval-after-load 'org
     (setq org-directory "~/org")
     (setq org-default-notes-file "~/org/notes.org")
@@ -316,9 +319,12 @@ you should place your code here."
               "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/org/journal.org")
               "* %?\nAdded: %U\n  %i\n  %a")))
-
     )
-  (setq python-shell-virtualenv-path "/Users/cassidydowning-bryant/.virtualenvs/roverweb")
+
+  ;; Rover-specific
+  (setq python-shell-virtualenv-path
+   "/Users/cassidydowning-bryant/.virtualenvs/roverweb")
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
