@@ -6,3 +6,6 @@ tpope/vim-fugitive
 tpope/vim-surround
 Valloric/YouCompleteMe
 luochen1990/rainbow
+vim-syntastic/syntastic
+python-mode/python-mode
+mileszs/ack
