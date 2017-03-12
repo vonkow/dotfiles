@@ -14,3 +14,7 @@ tpope/vim-surround
 Valloric/YouCompleteMe
 vim-syntastic/syntastic
 vimwiki/vimwiki
+luochen1990/rainbow
+vim-syntastic/syntastic
+python-mode/python-mode
+mileszs/ack

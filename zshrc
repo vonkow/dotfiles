@@ -49,7 +49,7 @@ plugins=(git gulp ssh-agent)
 
 # User configuration
 
-export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/caz_downing-bryant/bin:/Users/caz_downing-bryant/Projects/libs/android-sdk-macosx/platform-tools:/Users/caz_downing-bryant/Projects/libs/android-sdk-macosx/tools:/Users/caz_downing-bryant/Projects/libs/apache-ant-1.9.4/bin:/Users/caz_downing-bryant/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:~/bin:/usr/local/munki"
+export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/caz_downing-bryant/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:~/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -78,3 +78,19 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+source $HOME/projects/web/profile
+source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
+
+# Use ctrl-z to return to vim
+fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER="fg"
+    zle accept-line
+  else
+    zle push-input
+    zle clear-screen
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z

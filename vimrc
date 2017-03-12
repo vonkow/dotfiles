@@ -112,18 +112,30 @@ set formatoptions+=1 " Break before 1-letter words
 
 " Add some helpful mappings
 " Mapleader
-let mapleader=" "
+let mapleader="\<Space>"
 " remap j/k to travers virtual lines while ignoring virtual lines when used in multiline operations (ie: 10j)
 nnoremap <expr> j v:count ? 'j' : 'gj'
 nnoremap <expr> k v:count ? 'k' : 'gk'
 " jk is faster than escape
 imap jk <Esc>
+imap jj <Esc>
 " Make w!! force save with sudo for when you forgot to sudo vim
 cmap w!! %!sudo tee > /dev/null %
 " not sure about these ones, maybe if leader wasn't , they've be easier to type
-map <Leader>n :bn<cr>
-map <Leader>p :bp<cr>
-map <Leader>d :bd<cr>
+map <Leader>f :bn<cr>
+map <Leader>b :bp<cr>
+" map <Leader>d :bd<cr>
+" preface y d and p with leader to use system clipboard
+" y isn't working at the moment (it just goes forward a char)
+" vmap <Leader>y "*y
+" vmap <Leader>Y "*Y
+vmap <Leader>d "*d
+vmap <Leader>D "*D
+nmap <Leader>p "*p
+nmap <Leader>P "*P
+vmap <Leader>p "*p
+vmap <Leader>P "*P
+
 
 " Filetype specific stuff, mostly tabs vs spaces holy war related
 autocmd FileType html setlocal shiftwidth=2 tabstop=2
@@ -163,4 +175,19 @@ let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_javascript_checkers = ['eslint']
 " let g:syntastic_auto_loc_list = 1
 
-let g:ycm_python_binary_path = 'python'
+" Ack stuff
+cnoreabbrev Ack Ack!
+nnoremap <Leader>a :Ack!<Space>
+
+" ROVER STUFFS
+let g:syntastic_python_flake8_args = '--ignore=E123,E126,E127,E128,W503 --max-line-length 120'
+let g:pymode_rope = 1
+let g:pymode_lint = 0 " let syntastic deal with it instead
+let g:pymode_virtualenv_path = '/Users/cassidydowning-bryant/.virtualenvs/roverweb'
+let g:pymode_options_max_line_length = 120
+let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
+" Skip some PEP8 errors that we don't adhere to at Rover
+let g:pymode_lint_ignore = 'E123,E126,E127,E128'
+
+" Rebind go to definition command
+let g:pymode_rope_goto_definition_bind = '<C-]>'
