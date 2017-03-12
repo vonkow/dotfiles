@@ -304,6 +304,15 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; A header; because, why not?
+  (defconst my-header "some long header string...")
+  (setq header-line-format '(:eval (substring my-header
+                                              (min (length my-header)
+                                                   (window-hscroll)))))
+
+  ;; Fullscreen (Mac OS only (TODO make this smarter))
+  (set-frame-parameter nil 'fullscreen 'fullboth)
+
   ;; org mode
   (with-eval-after-load 'org
     (setq org-directory "~/org")
@@ -322,6 +331,8 @@ you should place your code here."
     )
 
   ;; Rover-specific
+  ;; (Maybe set this only in the project proper
+  ;;  (or be really cool and tunnel into the docker instance to use its env))
   (setq python-shell-virtualenv-path
    "/Users/cassidydowning-bryant/.virtualenvs/roverweb")
 
