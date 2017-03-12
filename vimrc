@@ -112,7 +112,7 @@ set formatoptions+=1 " Break before 1-letter words
 
 " Add some helpful mappings
 " Mapleader
-let mapleader=","
+let mapleader=" "
 " remap j/k to travers virtual lines while ignoring virtual lines when used in multiline operations (ie: 10j)
 nnoremap <expr> j v:count ? 'j' : 'gj'
 nnoremap <expr> k v:count ? 'k' : 'gk'
@@ -147,8 +147,13 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 map <F2> :NERDTreeToggle<CR>
 map <C-n> :NERDTreeToggle<CR>
 
-" Rainbow parens. They're cool, except in .html files (TODO find fix)
+" Rainbow parens. They're cool, except in .html files
 let g:rainbow_active = 1
+let g:rainbow_conf = {
+\   'separately': {
+\       'html': 0
+\   }
+\}
 
 " syntastic stuff. I give up, the syntax checkers win.
 let g:syntastic_always_populate_loc_list = 1
@@ -157,3 +162,5 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_javascript_checkers = ['eslint']
 " let g:syntastic_auto_loc_list = 1
+
+let g:ycm_python_binary_path = 'python'
