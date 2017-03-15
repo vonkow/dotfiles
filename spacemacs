@@ -226,7 +226,7 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil
+   dotspacemacs-fullscreen-at-startup 1
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -309,14 +309,11 @@ you should place your code here."
   ;; A header; because, why not?
   ;; Well, to be perfectly honest, because here's not the fucking place to put it
   ;; it'll only show if you reload config after opening a buffer for editing
-  ;; (Yay, learning)
+  ;; Yay, learning!
   ;;(defconst my-header "some long header string...")
   ;;(setq header-line-format '(:eval (substring my-header
                                               ;;(min (length my-header)
                                                    ;;(window-hscroll)))))
-
-  ;; Fullscreen (Mac OS only (TODO make this smarter))
-  (set-frame-parameter nil 'fullscreen 'fullboth)
 
   ;; org mode
   (with-eval-after-load 'org
@@ -333,6 +330,8 @@ you should place your code here."
               "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/org/journal.org")
          "* %?\nAdded: %U\n  %i\n  %a")
+        ("T" "Tea Journal" entry (file+headline "~/org/tea.org" "Tea Journal")
+         "** %U\n%?\n %i")
         ("s" "Spirits Notes" entry (file+headline "~/org/spirits.org" "Random Notes")
          "** %?\nAdded: %U\n  %i")))
     )
