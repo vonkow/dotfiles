@@ -323,8 +323,8 @@ you should place your code here."
                           ("@work" . ?w)
                           ("@home" . ?h)
                           (:endgroup . nil)
-                          ("@plants" . ?p)
-                          ("@tea" . ?t)))
+                          ("plants" . ?p)
+                          ("tea" . ?t)))
     (setq org-capture-templates
       '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
               "* TODO %?\n  %i\n  %a")
