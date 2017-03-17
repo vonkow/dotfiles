@@ -311,7 +311,9 @@ you should place your code here."
   (defun add-py-docstring ()
     "Add python docstring"
     (interactive)
-    (evil-open-below 1))
+    (evil-open-below 1)
+    (insert "\"\"\"\"\"\"")
+    (backward-char 3))
 
   (spacemacs/set-leader-keys-for-major-mode
     'python-mode
