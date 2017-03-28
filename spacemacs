@@ -310,6 +310,17 @@ you should place your code here."
 
   (setq confirm-kill-emacs 'y-or-n-p)
 
+  ;; A header; because, why not?
+  ;; Well, to be perfectly honest, because here's not the fucking place to put it
+  ;; it'll only show if you reload config after opening a buffer for editing
+  ;; Yay, learning!
+  ;;(defconst my-header "some long header string...")
+  ;;(setq header-line-format '(:eval (substring my-header
+                                              ;;(min (length my-header)
+                                                   ;;(window-hscroll)))))
+
+  ;; Python helpers, etc.
+
   ;; TODO Add a docstring to the top of the function or class
   (defun add-py-docstring ()
     "Add python docstring"
@@ -322,22 +333,15 @@ you should place your code here."
     'python-mode
     (kbd "f") 'add-py-docstring)
 
-  ;; A header; because, why not?
-  ;; Well, to be perfectly honest, because here's not the fucking place to put it
-  ;; it'll only show if you reload config after opening a buffer for editing
-  ;; Yay, learning!
-  ;;(defconst my-header "some long header string...")
-  ;;(setq header-line-format '(:eval (substring my-header
-                                              ;;(min (length my-header)
-                                                   ;;(window-hscroll)))))
-
   ;; JavaScript, what fun!
+
   (setq-default js2-basic-offset 2)
   (setq-default js-indent-level 2)
   (setq-default js2-strict-missing-semi-warning nil)
 
 
   ;; org mode
+
   (with-eval-after-load 'org
     (setq org-directory "~/org")
     (setq org-default-notes-file "~/org/notes.org")
@@ -364,7 +368,8 @@ you should place your code here."
         ))
     )
 
-  ;; Rover-specific
+  ;; Rover-related
+
   ;; (Maybe set this only in the project proper
   ;;  (or be really cool and tunnel into the docker instance to use its env))
   (setq python-shell-virtualenv-path
