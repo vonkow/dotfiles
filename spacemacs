@@ -307,6 +307,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  (setq confirm-kill-emacs 'y-or-n-p)
+
   ;; TODO Add a docstring to the top of the function or class
   (defun add-py-docstring ()
     "Add python docstring"
@@ -319,7 +321,6 @@ you should place your code here."
     'python-mode
     (kbd "f") 'add-py-docstring)
 
-  (setq confirm-kill-emacs 'y-or-n-p)
 
   ;; A header; because, why not?
   ;; Well, to be perfectly honest, because here's not the fucking place to put it
