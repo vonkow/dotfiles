@@ -80,7 +80,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 source $HOME/projects/web/profile
-source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
+# source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
 
 # Use ctrl-z to return to vim
 fancy-ctrl-z () {

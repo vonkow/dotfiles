@@ -31,36 +31,53 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     javascript
-     html
-     markdown
-     python
-     themes-megapack
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     helm
      auto-completion
      better-defaults
+     common-lisp
+     django
      emacs-lisp
+     ;emoji ; fun (no fun if you're trying to use org mode)
+     games ; fun
      git
+     github
+     gnus
+     helm
+     html
+     javascript
      markdown
      org
+     ; really, you haven't fixed the below yet? geeze (
+     ;  learn to use your pinkies for typing alphabetical characters, srsly)
+     ;(org-jira :variables
+               ;jiralib-url "https://roverdotcom.atlassian.net"
+               ;org-jira-working-dir "~/.org-jira")
+     osx
      (shell :variables
             shell-default-shell 'multi-term
             shell-default-height 30
             shell-default-position 'bottom)
+     python
+     selectric ; fun
+     slack
+     sql
      spell-checking
+     spotify
      syntax-checking
+     themes-megapack
      version-control
+     xkcd ; fun
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      (org-jira :location (recipe
+                                                           :fetcher github
+                                                           :repo "ahungry/org-jira"
+                                                           :branch "restapi"))
+
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -96,7 +113,7 @@ values."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update nil
+   dotspacemacs-check-for-update t
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'.
@@ -144,7 +161,7 @@ values."
                                :size 18
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1.4)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -221,7 +238,7 @@ values."
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
    ;; (default 'bottom)
-   dotspacemacs-which-key-position 'right-then-bottom
+   dotspacemacs-which-key-position 'bottom
    ;; If non nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
@@ -342,6 +359,7 @@ you should place your code here."
 
   ;; org mode
 
+
   (with-eval-after-load 'org
     (setq org-directory "~/org")
     (setq org-default-notes-file "~/org/notes.org")
@@ -358,7 +376,11 @@ you should place your code here."
                           ("tea" . ?t)))
     (setq org-capture-templates
       '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
-              "* TODO %?\n  %i\n  %a")
+         "* TODO %?\n  %i\n  %a")
+        ("p" "Programming Task" entry (file+headline "~/org/programming-notes.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
+        ("w" "Work Task" entry (file+headline "~/org/work-notes.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/org/journal.org")
          "* %?\nAdded: %U\n  %i\n  %a")
         ("T" "Tea Journal" entry (file+headline "~/org/tea.org" "Tea Journal")
@@ -366,14 +388,86 @@ you should place your code here."
         ("s" "Spirits Notes" entry (file+headline "~/org/spirits.org" "Random Notes")
          "** %?\nAdded: %U\n  %i")
         ))
+
+    ;; ORG JIRA!!!
+    (setq jiralib-url "https://roverdotcom.atlassian.net")
+    (setq org-jira-working-dir "~/org-jira")
+    (setq org-agenda-files '("~/org" "~/org-jira"))
+
+    (spacemacs/declare-prefix-for-mode 'org-mode "mj" "jira")
+    (spacemacs/declare-prefix-for-mode 'org-mode "mjp" "projects")
+    (spacemacs/declare-prefix-for-mode 'org-mode "mji" "issues")
+    (spacemacs/declare-prefix-for-mode 'org-mode "mjs" "subtasks")
+    (spacemacs/declare-prefix-for-mode 'org-mode "mjc" "comments")
+    (spacemacs/declare-prefix-for-mode 'org-mode "mjt" "todos")
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode
+      "jpg" 'org-jira-get-projects
+      "jib" 'org-jira-browse-issue
+      "jig" 'org-jira-get-issues
+      "jih" 'org-jira-get-issues-headonly
+      "jif" 'org-jira-get-issues-from-filter-headonly
+      "jiF" 'org-jira-get-issues-from-filter
+      "jiu" 'org-jira-update-issue
+      "jiw" 'org-jira-progress-issue
+      "jir" 'org-jira-refresh-issue
+      "jic" 'org-jira-create-issue
+      "jik" 'org-jira-copy-current-issue-key
+      "jsc" 'org-jira-create-subtask
+      "jsg" 'org-jira-get-subtasks
+      "jcu" 'org-jira-update-comment
+      "jtj" 'org-jira-todo-to-jira)
+
     )
+
+  ;; Email?
+  ;(setq user-mail-address "skopsycats@gmail.com"
+        ;user-full-name "<caz vonkow>")
+
+  ;(setq gnus-select-method
+        ;'(nnimap "gmail"
+                 ;(nnimap-address "imap.gmail.com")  ; it could also be imap.googlemail.com if that's your server.
+                 ;(nnimap-server-port "imaps")
+                 ;(nnimap-stream ssl)))
+
+  ;(setq smtpmail-smtp-server "smtp.gmail.com"
+        ;smtpmail-smtp-service 587
+        ;gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
+  ;; Get email, and store in nnml
+  (setq gnus-secondary-select-methods
+        '(
+          (nnimap "gmail"
+                  (nnimap-address
+                   "imap.gmail.com")
+                  (nnimap-server-port 993)
+                  (nnimap-stream ssl))
+          ))
+
+  ;; Send email via Gmail:
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-default-smtp-server "smtp.gmail.com")
+
+  ;; Archive outgoing email in Sent folder on imap.gmail.com:
+  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
+        gnus-message-archive-group "[Gmail]/Sent Mail")
+
+  ;; set return email address based on incoming email address
+  ;(setq gnus-posting-styles
+        ;'(((header "to" "address@outlook.com")
+           ;(address "address@outlook.com"))
+          ;((header "to" "address@gmail.com")
+           ;(address "address@gmail.com"))))
+
+  ;; store email in ~/gmail directory
+  (setq nnml-directory "~/gmail")
+  (setq message-directory "~/gmail")
 
   ;; Rover-related
 
   ;; (Maybe set this only in the project proper
   ;;  (or be really cool and tunnel into the docker instance to use its env))
   (setq python-shell-virtualenv-path
-   "/Users/cassidydowning-bryant/.virtualenvs/roverweb")
+   "/Users/caz/.virtualenvs/roverweb")
 
   )
 
@@ -389,7 +483,7 @@ you should place your code here."
     ("~/Dropbox/org/spirits.org" "~/org/tea.org" "~/org/notes.org")))
  '(package-selected-packages
    (quote
-    (web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flyspell-correct-helm flyspell-correct auto-dictionary web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop mwim multi-term flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme smeargle orgit org-projectile org-present org org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter evil-magit magit magit-popup git-commit with-editor diff-hl company-statistics company-anaconda company auto-yasnippet yasnippet ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-them))))
+    (org-jira magit-gh-pulls github-search github-clone github-browse-file gist gh marshal logito pcache reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl typit mmt pacmacs 2048-game selectric-mode xkcd emoji-cheat-sheet-plus company-emoji slack emojify circe oauth2 websocket ht sql-indent pony-mode spotify helm-spotify multi slime-company slime common-lisp-snippets web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flyspell-correct-helm flyspell-correct auto-dictionary web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop mwim multi-term flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme smeargle orgit org-projectile org-present org org-pomodoro alert log4e gntp org-download magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter evil-magit magit magit-popup git-commit with-editor diff-hl company-statistics company-anaconda company auto-yasnippet yasnippet ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-them))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
