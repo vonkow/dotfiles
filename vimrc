@@ -15,8 +15,8 @@ set report=0 " Show all changes
 set noexrc " don't read local .vimrc-like files, just in case
 
 " LOAD THE PLUGINS
-execute pathogen#infect()
-filetype plugin indent on
+#execute pathogen#infect()
+#filetype plugin indent on
 
 " 'UI' and cursor setting
 set shortmess=atI " Don't show the intro message when starting vim
