@@ -61,7 +61,7 @@ values."
      selectric ; fun
      slack
      sql
-     spell-checking
+     ;;spell-checking
      spotify
      syntax-checking
      themes-megapack
@@ -152,8 +152,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zonokai-blue
-                         sanityinc-tomorrow-night)
+   dotspacemacs-themes '(sanityinc-tomorrow-night
+                         zonokai-blue)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -335,8 +335,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
       (setenv "PATH" path-from-shell)
       (setq exec-path (split-string path-from-shell path-separator))))
 
-  ;;(when (memq window-system '(mac ns x))
-    ;;(exec-path-from-shell-initialize))
   )
 
 (defun dotspacemacs/user-config ()
@@ -346,36 +344,12 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (hl-line-mode -1)
+  (global-hl-line-mode -1)
 
   ;; Org
   (with-eval-after-load 'org
-   (setq org-directory "~/org")
-   (setq org-default-notes-file "~/org/notes.org")
-   (setq org-global-properties
-         '(("Effort" . "0:10 0:30 1:00 2:00 4:00 8:00 0:00")
-           ("Writer" . "Caz")
-           ("Author" . "vonkow")
-           ))
-   (setq org-tag-alist '((:startgroup . nil)
-                         ("@work" . ?w)
-                         ("@home" . ?h)
-                         (:endgroup . nil)
-                         ("plants" . ?p)
-                         ("tea" . ?t)))
-   (setq org-capture-templates
-     '(("t" "Task" entry (file+headline "~/org/notes.org" "Tasks")
-        "* TODO %?\n  %i\n  %a")
-       ("p" "Programming Task" entry (file+headline "~/org/programming-notes.org" "Tasks")
-        "* TODO %?\n  %i\n  %a")
-       ("w" "Work Task" entry (file+headline "~/org/work-notes.org" "Tasks")
-        "* TODO %?\n  %i\n  %a")
-       ("j" "Journal" entry (file+datetree "~/org/journal.org")
-        "* %?\nAdded: %U\n  %i\n  %a")
-       ("T" "Tea Journal" entry (file+headline "~/org/tea.org" "Tea Journal")
-        "** %U\n%?\n %i")
-       ("s" "Spirits Notes" entry (file+headline "~/org/spirits.org" "Random Notes")
-        "** %?\nAdded: %U\n  %i")
-       ))
+
    ;; ORG JIRA!!!
    (setq jiralib-url "https://roverdotcom.atlassian.net")
    (setq org-jira-working-dir "~/org-jira")
@@ -408,7 +382,7 @@ you should place your code here."
 
   )
 
-;; Do not write anything past this comment. This is where Emacs will
+
 ;; auto-generate custom variable definitions.
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

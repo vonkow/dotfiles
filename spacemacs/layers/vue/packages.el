@@ -17,6 +17,8 @@
   ))
 
 (defun vue/init-vue-mode ()
-    (use-package vue-mode))
+  (use-package vue-mode
+    :config
+    (setq mmm-submode-decoration-level 0)))
 
 ;;; packages.el ends here
