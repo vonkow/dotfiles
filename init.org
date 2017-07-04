@@ -1,0 +1,222 @@
+* Package Repos
+Get packages from ELPA and MELPA
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives 
+    (cons "melpa"  "https://melpa.org/packages/"))
+#+END_SRC
+
+Use =use-package= to load packages. =:ensure= and =:defer= by default
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  
+  (require 'use-package)
+
+  (setq use-package-always-ensure t
+        use-package-always-defer t)
+#+END_SRC
+* Init Files and Monkeypatches
+** Path
+   Use the shell's path, not stupid Mac OS path
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+#+END_SRC
+** Custom
+   No clutter from custom in =.emacs=
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file "~/init-custom.el")
+  (load-file custom-file)
+#+END_SRC
+** Shortcut to init
+find-init-file quickly
+#+BEGIN_SRC emacs-lisp
+  (defun init-file ()
+    "Return full path to init, resolving symlinks"
+    (let* ((file-name (expand-file-name "~/init.org"))
+           (symlink-target (file-symlink-p file-name)))
+      (or symlink-target file-name)))
+
+  (defun find-init-file ()
+    (interactive)
+    (find-file (init-file)))
+#+END_SRC
+* Theme and font
+  Nicer font, solarized, no GUI, statusbar, and nyan for progress
+
+#+BEGIN_SRC emacs-lisp
+(use-package color-theme-sanityinc-solarized)
+(color-theme-sanityinc-solarized-light)
+
+(set-face-attribute 'default nil
+                    :family "Anonymous Pro for Powerline"
+                    :height 160
+                    :weight 'normal
+                    :width 'normal)
+
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+(tool-bar-mode -1)
+
+(use-package smart-mode-line-powerline-theme)
+(use-package smart-mode-line)
+(setq sml/theme 'respectful)
+(sml/setup)
+
+(use-package nyan-mode)
+(setq nyan-animate-nyancat t)
+(setq nyan-wavy-trail t)
+(nyan-mode)
+#+END_SRC
+* Evil
+** Packages
+   Vi til I die
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :demand
+    :config (evil-mode 1))
+  (require 'evil)
+
+  (use-package evil-leader
+    :demand
+    :config (progn
+              (setq evil-leader/in-all-states t)
+              (global-evil-leader-mode)))
+  (require 'evil-leader)
+#+END_SRC
+So we can see what's bound to what
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key :demand)
+  (which-key-mode)
+#+END_SRC
+** Initial setup
+Maybe move some of the following elsewhere once i have a better system
+to organize keybindings.
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-leader "SPC")
+  ; TODO move this somewhere better
+  (evil-leader/set-key
+    "SPC" 'execute-extended-command
+    "hh" 'help-command
+    "." 'find-init-file
+    "ff" 'find-file
+    "bb" 'buffer-menu
+    "dd" 'dired
+    "pp" 'proced)
+
+  ;; what's this for?
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+* Ivy
+  For finding stuff and what have you
+** TODO Learn how to use ivy
+#+BEGIN_SRC emacs-lisp
+
+(use-package ag
+  :ensure t
+  :config
+  (add-hook 'ag-mode-hook 'toggle-truncate-lines)
+  (setq ag-highlight-search t)
+  (setq ag-reuse-buffers 't))
+
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1)
+  (bind-key "C-c C-r" 'ivy-resume))
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode)
+  (setq projectile-mode-line
+        '(:eval (format " [%s]" (projectile-project-name))))
+  (setq projectile-remember-window-configs t)
+  (setq projectile-completion-system 'ivy))
+
+(use-package counsel
+  :ensure t
+  ;:bind
+  ;("M-x" . counsel-M-x)
+  ;("C-z f" . counsel-describe-function)
+  ;("C-z v" . counsel-describe-variable)
+  ;("C-c k" . counsel-ag)
+  )
+
+  (evil-leader/set-key "sa" 'counsel-ag)
+#+END_SRC
+* Completion and Checking
+#+BEGIN_SRC emacs-lisp
+(use-package company-go
+  :ensure t)
+
+(use-package company-jedi
+  :ensure t)
+
+(use-package company
+  :ensure t
+  :diminish company-mode
+  :init
+  (add-hook 'after-init-hook 'global-company-mode)
+  :bind
+  ("M-/" . company-complete-common)
+  :config
+  (defun my/python-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi))
+  (add-hook 'python-mode-hook 'my/python-mode-hook)
+  (add-to-list 'company-backends 'company-go)
+  (setq company-dabbrev-downcase nil))
+
+(use-package flycheck
+  :ensure t
+  :config
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (add-hook 'python-mode-hook 'flycheck-mode)
+  (add-hook 'go-mode-hook 'flycheck-mode)
+  (add-hook 'sh-mode-hook 'flycheck-mode)
+  (add-hook 'rst-mode-hook 'flycheck-mode)
+  (add-hook 'js-mode-hook 'flycheck-mode))
+#+END_SRC
+* Org
+** Make Org Evil
+*** TODO Add more org keys or use a package
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key-for-mode 'org-mode
+    "TAB" 'org-cycle
+    "t" 'org-todo)
+
+  (add-hook 'org-mode-hook #'(lambda () (electric-indent-local-mode 0)))
+  (add-hook 'org-mode-hook #'(lambda () (setq evil-auto-indent nil)))
+#+END_SRC
+** Babel
+
+#+BEGIN_SRC emacs-lisp
+(setq org-confirm-babel-evaluate #'(lambda (lang body)
+  (not (or (string= lang "emacs-lisp")
+           (string= lang "python")))))
+
+(org-babel-do-load-languages 
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (python . t)
+    (ditaa . t)))
+#+END_SRC
+
+* VC 
+  Magit is awesome.
+** TODO Add git timemachine 
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :config
+    (progn
+      (global-set-key (kbd "C-x g") 'magit-status)
+      ()))
+
+  (evil-leader/set-key "g" 'magit-status)
+
+  (use-package evil-magit)
+#+END_SRC
