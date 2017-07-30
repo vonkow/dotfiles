@@ -1,12 +1,19 @@
-* Package Repos
-Get packages from ELPA and MELPA
+* Init and Monkeypatch
+** Preamble
+   In order to have this cool org-ified init file, .emacs does a few
+things. This includes calling package-initialize and loading org before 
+evaluating this file.
+** All about Packages
+   Gotta configure how we get packages before getting them, duh
+*** Other repos
+    ELPA is cool, but MELPA is ice cold. Get packages from both.
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (add-to-list 'package-archives 
     (cons "melpa"  "https://melpa.org/packages/"))
 #+END_SRC
-
-Use =use-package= to load packages. =:ensure= and =:defer= by default
+*** Using use-package
+    Use =use-package= to load packages. =:ensure= and =:defer= by default
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -17,22 +24,21 @@ Use =use-package= to load packages. =:ensure= and =:defer= by default
   (setq use-package-always-ensure t
         use-package-always-defer t)
 #+END_SRC
-* Init Files and Monkeypatches
-** Path
+** Pathing is silly
    Use the shell's path, not stupid Mac OS path
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell)
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 #+END_SRC
-** Custom
+** Custom is sillier
    No clutter from custom in =.emacs=
 #+BEGIN_SRC emacs-lisp
   (setq custom-file "~/init-custom.el")
   (load-file custom-file)
 #+END_SRC
 ** Shortcut to init
-find-init-file quickly
+   find-init-file quickly
 #+BEGIN_SRC emacs-lisp
   (defun init-file ()
     "Return full path to init, resolving symlinks"
@@ -44,12 +50,266 @@ find-init-file quickly
     (interactive)
     (find-file (init-file)))
 #+END_SRC
-* Theme and font
-  Nicer font, solarized, no GUI, statusbar, and nyan for progress
+*** TODO Make this work when not in home 
+    something is being dumb and relative
+* Packages and config
+  Emacs has good functions, but let's add gooderer ones
+** Evil, etc
+   Can't be too holy, after all
+*** Evil
+    Vi til I die
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :demand
+    :config (evil-mode 1))
+  (require 'evil)
+#+END_SRC
+*** Evil Leader
+    This is a dictatorship
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-leader
+    :demand
+    :config (progn
+              (setq evil-leader/in-all-states t)
+              (global-evil-leader-mode)))
+  (require 'evil-leader)
+#+END_SRC
+*** Some Extra Evil Packages
+    Misery loves company
+**** We have you surrounded
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround)
+  (require 'evil-surround)
+  (global-evil-surround-mode 1)
+#+END_SRC
+** Navigation
+*** Ivy
+    For finding one's way around places and what have you. Maybe look at 
+helm again?
+#+BEGIN_SRC emacs-lisp
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1)
+  ;(bind-key "C-c C-r" 'ivy-resume)
+)
+#+END_SRC
+**** TODO Learn how to use ivy
+*** Projectile
+    Manage yo shit
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode)
+    (setq projectile-mode-line
+          '(:eval (format " [%s]" (projectile-project-name))))
+    (setq projectile-remember-window-configs t)
+    (setq projectile-completion-system 'ivy))
+#+END_SRC
+*** Counsel
+    Clearly, it does something.
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+  :ensure t
+  ;:bind
+  ;("M-x" . counsel-M-x)
+  ;("C-z f" . counsel-describe-function)
+  ;("C-z v" . counsel-describe-variable)
+  ;("C-c k" . counsel-ag)
+  )
+#+END_SRC
+**** TODO learn why we care about this package
+*** Which key?
+    So we can see what's bound to what
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key :demand)
+  (which-key-mode)
+#+END_SRC
+** Search
+*** Ag
+    The silver surfer will probably be replaced by faster search someday.
+Heavy is the head that wears the crown.
+#+BEGIN_SRC emacs-lisp
+(use-package ag
+  :ensure t
+  :config
+  (add-hook 'ag-mode-hook 'toggle-truncate-lines)
+  (setq ag-highlight-search t)
+  (setq ag-reuse-buffers 't))
+#+END_SRC
+** Completion and Checking
+   Flycheck seemed good, let's also try company
+*** TODO Figure out if both work together or what
+*** Company
+#+BEGIN_SRC emacs-lisp
+  (use-package company-go
+    :ensure t)
 
+  (use-package company-jedi
+    :ensure t)
+
+  (use-package company
+    :ensure t
+    :diminish company-mode
+    :init
+    (add-hook 'after-init-hook 'global-company-mode)
+    :bind
+    ("M-/" . company-complete-common)
+    :config
+    (defun my/python-mode-hook ()
+      (add-to-list 'company-backends 'company-jedi))
+    (add-hook 'python-mode-hook 'my/python-mode-hook)
+    (add-to-list 'company-backends 'company-go)
+    (setq company-dabbrev-downcase nil))
+#+END_SRC
+*** Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :config
+    (setq flycheck-check-syntax-automatically '(mode-enabled save))
+    (add-hook 'python-mode-hook 'flycheck-mode)
+    (add-hook 'go-mode-hook 'flycheck-mode)
+    (add-hook 'sh-mode-hook 'flycheck-mode)
+    (add-hook 'rst-mode-hook 'flycheck-mode)
+    (add-hook 'js-mode-hook 'flycheck-mode))
+#+END_SRC
+** Org
+   Installed by bootstrap, hence the cool org-ified init file.
+*** Make Org Evil
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook #'(lambda () (electric-indent-local-mode 0)))
+  (add-hook 'org-mode-hook #'(lambda () (setq evil-auto-indent nil)))
+#+END_SRC
+*** Babel
+    This should at least sorta make init.org fun to edit
+#+BEGIN_SRC emacs-lisp
+  (setq org-confirm-babel-evaluate #'(lambda (lang body)
+    (not (or (string= lang "emacs-lisp")
+             (string= lang "python")))))
+
+  (org-babel-do-load-languages 
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (python . t)
+      (ditaa . t)))
+#+END_SRC
+*** TODO Make paredit work in babel'd files
+** VC
+   You can't have holy evil without some amount of control
+*** Magit
+    Is awesome, use it.
+#+BEGIN_SRC emacs-lisp
+  (use-package magit)
+  (use-package evil-magit)
+#+END_SRC
+**** TODO Add git timemachine 
+** Paredit and lisp thisgs
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit)
+  ; The below could use auditing and maybe expanding to make this file work with paredit too
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+#+END_SRC
+* Keybindings and whatnot
+** Elect Evil Leader and its henchman M-x M-x
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-leader "SPC")
+  (evil-leader/set-key "SPC" 'execute-extended-command)
+#+END_SRC
+** Add the ability to name prefixes
+   Blatantly stolen from spacemacs
+#+BEGIN_SRC emacs-lisp
+  (defun declare-named-prefix (prefix name &optional long-name)
+    (let* ((command name)
+           (full-prefix (concat evil-leader/leader " " prefix))
+           (full-prefix-emacs (concat evil-leader/leader " " prefix))
+           (full-prefix-lst (listify-key-sequence (kbd full-prefix)))
+           (full-prefix-emacs-lst (listify-key-sequence
+                                   (kbd full-prefix-emacs))))
+      (unless long-name (setq long-name name))
+      (which-key-declare-prefixes
+        full-prefix-emacs (cons name long-name)
+        full-prefix (cons name long-name)))) 
+
+  ;; Not sure we need this 
+  (put 'declare-named-prefix 'lisp-indent-function 'defun)
+#+END_SRC
+** Core Keybindings
+   Help, etc
+*** Help
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "h" "halp")
+  (evil-leader/set-key "hh" 'help-command)
+#+END_SRC
+** Buffers
+   Everything's a buffer, man
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "b" "buffers")
+  (evil-leader/set-key "bb" 'buffer-menu)
+#+END_SRC
+** Files
+   Every buffer on disk is a file, or something like that
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "f" "files")
+  (evil-leader/set-key "ff" 'find-file)
+#+END_SRC
+** Dirs
+   Directories are just files of files, but they are special
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "d" "directories")
+  (evil-leader/set-key "dd" 'dired)
+#+END_SRC
+** Procs
+   Processes are, like, buffers in action or maybe they're files come to 
+life and maybe life is just a stream of ones, zeros, and the occasional 
+null to keep it interesting and piss off the static typers?
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "p" "processes")
+  (evil-leader/set-key "pp" 'proced)
+#+END_SRC
+** Search
+   If you can't find it, does it really exist?
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "s" "search")
+  (evil-leader/set-key "sa" 'counsel-ag)
+#+END_SRC
+** Org
+   This'll need a lot of work
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key-for-mode 'org-mode
+    "TAB" 'org-cycle
+    "t" 'org-todo)
+#+END_SRC
+*** TODO Add more org keys or use a package
+** Magit
+   Is really awesome
+#+BEGIN_SRC emacs-lisp
+(evil-leader/set-key "g" 'magit-status)
+#+END_SRC
+*** TODO Add hotkey for blame
+*** TODO Make q quit in blame
+** Moar Keybindings
+   Misc shit
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key "." 'find-init-file)
+  ;; what's this for?
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+*** TODO Move these somewhere better
+* GUI, Theme and Font
+  Nicer font, solarized, no GUI, statusbar, and nyan for progress
 #+BEGIN_SRC emacs-lisp
 (use-package color-theme-sanityinc-solarized)
-(color-theme-sanityinc-solarized-light)
+;(color-theme-sanityinc-solarized-light)
+(color-theme-sanityinc-solarized-dark)
 
 (set-face-attribute 'default nil
                     :family "Anonymous Pro for Powerline"
@@ -66,157 +326,15 @@ find-init-file quickly
 (setq sml/theme 'respectful)
 (sml/setup)
 
-(use-package nyan-mode)
-(setq nyan-animate-nyancat t)
-(setq nyan-wavy-trail t)
-(nyan-mode)
-#+END_SRC
-* Evil
-** Packages
-   Vi til I die
-#+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :demand
-    :config (evil-mode 1))
-  (require 'evil)
+;(use-package nyan-mode)
+;(setq nyan-animate-nyancat t)
+;(setq nyan-wavy-trail t)
+;(nyan-mode)
 
-  (use-package evil-leader
-    :demand
-    :config (progn
-              (setq evil-leader/in-all-states t)
-              (global-evil-leader-mode)))
-  (require 'evil-leader)
-#+END_SRC
-So we can see what's bound to what
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key :demand)
-  (which-key-mode)
-#+END_SRC
-** Initial setup
-Maybe move some of the following elsewhere once i have a better system
-to organize keybindings.
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-leader "SPC")
-  ; TODO move this somewhere better
-  (evil-leader/set-key
-    "SPC" 'execute-extended-command
-    "hh" 'help-command
-    "." 'find-init-file
-    "ff" 'find-file
-    "bb" 'buffer-menu
-    "dd" 'dired
-    "pp" 'proced)
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
 
-  ;; what's this for?
-  (setq-default indent-tabs-mode nil)
-#+END_SRC
-* Ivy
-  For finding stuff and what have you
-** TODO Learn how to use ivy
-#+BEGIN_SRC emacs-lisp
-
-(use-package ag
-  :ensure t
-  :config
-  (add-hook 'ag-mode-hook 'toggle-truncate-lines)
-  (setq ag-highlight-search t)
-  (setq ag-reuse-buffers 't))
-
-(use-package ivy
-  :ensure t
-  :diminish ivy-mode
-  :config
-  (ivy-mode 1)
-  (bind-key "C-c C-r" 'ivy-resume))
-
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-global-mode)
-  (setq projectile-mode-line
-        '(:eval (format " [%s]" (projectile-project-name))))
-  (setq projectile-remember-window-configs t)
-  (setq projectile-completion-system 'ivy))
-
-(use-package counsel
-  :ensure t
-  ;:bind
-  ;("M-x" . counsel-M-x)
-  ;("C-z f" . counsel-describe-function)
-  ;("C-z v" . counsel-describe-variable)
-  ;("C-c k" . counsel-ag)
-  )
-
-  (evil-leader/set-key "sa" 'counsel-ag)
-#+END_SRC
-* Completion and Checking
-#+BEGIN_SRC emacs-lisp
-(use-package company-go
-  :ensure t)
-
-(use-package company-jedi
-  :ensure t)
-
-(use-package company
-  :ensure t
-  :diminish company-mode
-  :init
-  (add-hook 'after-init-hook 'global-company-mode)
-  :bind
-  ("M-/" . company-complete-common)
-  :config
-  (defun my/python-mode-hook ()
-    (add-to-list 'company-backends 'company-jedi))
-  (add-hook 'python-mode-hook 'my/python-mode-hook)
-  (add-to-list 'company-backends 'company-go)
-  (setq company-dabbrev-downcase nil))
-
-(use-package flycheck
-  :ensure t
-  :config
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  (add-hook 'python-mode-hook 'flycheck-mode)
-  (add-hook 'go-mode-hook 'flycheck-mode)
-  (add-hook 'sh-mode-hook 'flycheck-mode)
-  (add-hook 'rst-mode-hook 'flycheck-mode)
-  (add-hook 'js-mode-hook 'flycheck-mode))
-#+END_SRC
-* Org
-** Make Org Evil
-*** TODO Add more org keys or use a package
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key-for-mode 'org-mode
-    "TAB" 'org-cycle
-    "t" 'org-todo)
-
-  (add-hook 'org-mode-hook #'(lambda () (electric-indent-local-mode 0)))
-  (add-hook 'org-mode-hook #'(lambda () (setq evil-auto-indent nil)))
-#+END_SRC
-** Babel
-
-#+BEGIN_SRC emacs-lisp
-(setq org-confirm-babel-evaluate #'(lambda (lang body)
-  (not (or (string= lang "emacs-lisp")
-           (string= lang "python")))))
-
-(org-babel-do-load-languages 
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (python . t)
-    (ditaa . t)))
-#+END_SRC
-
-* VC 
-  Magit is awesome.
-** TODO Add git timemachine 
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :config
-    (progn
-      (global-set-key (kbd "C-x g") 'magit-status)
-      ()))
-
-  (evil-leader/set-key "g" 'magit-status)
-
-  (use-package evil-magit)
+(transparency 80)
 #+END_SRC
