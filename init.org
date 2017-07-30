@@ -180,6 +180,14 @@ Heavy is the head that wears the crown.
    Installed by bootstrap, hence the cool org-ified init file.
 *** Make Org Evil
 #+BEGIN_SRC emacs-lisp
+  (use-package evil-org
+    :ensure t
+    :after org
+    :config
+    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'evil-org-mode-hook
+              (lambda ()
+                (evil-org-set-key-theme))))
   (add-hook 'org-mode-hook #'(lambda () (electric-indent-local-mode 0)))
   (add-hook 'org-mode-hook #'(lambda () (setq evil-auto-indent nil)))
 #+END_SRC
@@ -312,7 +320,7 @@ null to keep it interesting and piss off the static typers?
 (color-theme-sanityinc-solarized-dark)
 
 (set-face-attribute 'default nil
-                    :family "Anonymous Pro for Powerline"
+                    :family "Source Code Pro"
                     :height 160
                     :weight 'normal
                     :width 'normal)
@@ -321,15 +329,11 @@ null to keep it interesting and piss off the static typers?
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 
+;; TODO MOve to packages area
 (use-package smart-mode-line-powerline-theme)
 (use-package smart-mode-line)
 (setq sml/theme 'respectful)
 (sml/setup)
-
-;(use-package nyan-mode)
-;(setq nyan-animate-nyancat t)
-;(setq nyan-wavy-trail t)
-;(nyan-mode)
 
 (defun transparency (value)
   "Sets the transparency of the frame window. 0=transparent/100=opaque"
