@@ -87,13 +87,15 @@ evaluating this file.
     For finding one's way around places and what have you. Maybe look at 
 helm again?
 #+BEGIN_SRC emacs-lisp
-(use-package ivy
-  :ensure t
-  :diminish ivy-mode
-  :config
-  (ivy-mode 1)
-  ;(bind-key "C-c C-r" 'ivy-resume)
-)
+  (use-package ivy
+    :ensure t
+    :diminish ivy-mode
+    :config
+    (ivy-mode 1)
+    ;(bind-key "C-c C-r" 'ivy-resume)
+  )
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
 #+END_SRC
 **** TODO Learn how to use ivy
 *** Projectile
@@ -304,6 +306,13 @@ null to keep it interesting and piss off the static typers?
 #+END_SRC
 *** TODO Add hotkey for blame
 *** TODO Make q quit in blame
+** Lispy Things
+   Probably move these somewhere else someday
+#+BEGIN_SRC emacs-lisp
+  (declare-named-prefix "l" "lisp")
+  (evil-leader/set-key "ll" 'eval-last-sexp)
+#+END_SRC
+
 ** Moar Keybindings
    Misc shit
 #+BEGIN_SRC emacs-lisp
@@ -340,5 +349,5 @@ null to keep it interesting and piss off the static typers?
   (interactive "nTransparency Value 0 - 100 opaque:")
   (set-frame-parameter (selected-frame) 'alpha value))
 
-(transparency 80)
+(transparency 90)
 #+END_SRC
