@@ -129,6 +129,9 @@ evaluating this file.
           '(:eval (format " [%s]" (projectile-project-name))))
     (setq projectile-remember-window-configs t)
     (setq projectile-completion-system 'ivy))
+
+  (use-package helm-projectile
+    :ensure t)
 #+END_SRC
 *** Counsel
     Clearly, it does something.
@@ -382,7 +385,8 @@ Heavy is the head that wears the crown.
    Projectile will help you find stuff within a project, that's handy.
 #+BEGIN_SRC emacs-lisp
   (declare-named-prefix "p" "Project")
-  (evil-leader/set-key "pf" 'projectile-find-file)
+  (evil-leader/set-key "pf" 'helm-projectile-find-file-dwim)
+  (evil-leader/set-key "ps" 'helm-projectile-ag)
 #+END_SRC
 ** Procs
    Processes are, like, buffers in action or maybe they're files come to 
@@ -396,6 +400,7 @@ null to keep it interesting and piss off the static typers?
    If you can't find it, does it really exist?
 #+BEGIN_SRC emacs-lisp
   (declare-named-prefix "s" "search")
+  (evil-leader/set-key "sp" 'helm-projectile-ag)
   (evil-leader/set-key "sa" 'counsel-ag)
 #+END_SRC
 ** Org
