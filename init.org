@@ -103,24 +103,21 @@ evaluating this file.
 ** Navigation
 *** Helm
     Because Ivy was a little *too* minimalistic
-#+BEGIN_SRC
-  (use-package helm)
-#+END_SRC
-*** Ivy 
-    For finding one's way around places and what have you. Maybe look at 
-helm again?
 #+BEGIN_SRC emacs-lisp
-  ;(use-package ivy
-    ;:ensure t
-    ;:diminish ivy-mode
-    ;:config
-    ;(ivy-mode 1)
-    ;;(bind-key "C-c C-r" 'ivy-resume)
-  ;)
-  ;(setq ivy-use-virtual-buffers t)
-  ;(setq ivy-count-format "(%d/%d) ")
+  (use-package helm-core
+    :ensure t)
+  (use-package helm
+    :ensure t
+    :config (progn
+              (setq helm-buffers-fuzzy-matching t)
+              (helm-mode 1)))
+  (use-package helm-descbinds
+    :ensure t)
+  ; TODO helm-swoop if it looks coole
+  (use-package helm-ag
+    :ensure helm-ag)
+    
 #+END_SRC
-**** TODO Learn how to use ivy
 *** Projectile
     Manage yo shit
 #+BEGIN_SRC emacs-lisp
