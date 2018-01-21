@@ -101,19 +101,24 @@ evaluating this file.
   (global-evil-surround-mode 1)
 #+END_SRC
 ** Navigation
-*** Ivy
+*** Helm
+    Because Ivy was a little *too* minimalistic
+#+BEGIN_SRC
+  (use-package helm)
+#+END_SRC
+*** Ivy 
     For finding one's way around places and what have you. Maybe look at 
 helm again?
 #+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :diminish ivy-mode
-    :config
-    (ivy-mode 1)
-    ;(bind-key "C-c C-r" 'ivy-resume)
-  )
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
+  ;(use-package ivy
+    ;:ensure t
+    ;:diminish ivy-mode
+    ;:config
+    ;(ivy-mode 1)
+    ;;(bind-key "C-c C-r" 'ivy-resume)
+  ;)
+  ;(setq ivy-use-virtual-buffers t)
+  ;(setq ivy-count-format "(%d/%d) ")
 #+END_SRC
 **** TODO Learn how to use ivy
 *** Projectile

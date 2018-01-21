@@ -3,7 +3,9 @@
         ))
 
 (defun rover/init-rover-mode ()
-  ;; (Maybe set this only in the project proper
-  ;;  (or be really cool and tunnel into the docker instance to use its env))
-  (setq python-shell-virtualenv-path
-        "/Users/caz/.virtualenvs/roverweb"))
+   (setq python-shell-virtualenv-path
+         "/Users/caz/projects/web/bin/venv-path.sh")
+
+   (setq python-shell-interpreter
+         "/Users/caz/projects/web/bin/shell-plus.sh"))
+
