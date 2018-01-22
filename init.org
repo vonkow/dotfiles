@@ -92,6 +92,13 @@ evaluating this file.
               (global-evil-leader-mode)))
   (require 'evil-leader)
 #+END_SRC
+*** Local Leader
+    Actually use this below
+#+BEGIN_SRC emacs-lisp
+  (defvar local-leader-map (make-sparse-keymap)
+    "Keymap for local \"leader key\" shortcuts.")
+  (define-key evil-normal-state-map "," local-leader-map)
+#+END_SRC
 *** Some Extra Evil Packages
     Misery loves company
 **** We have you surrounded
