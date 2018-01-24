@@ -24,30 +24,12 @@ evaluating this file.
   (setq use-package-always-ensure t
         use-package-always-defer t)
 #+END_SRC
-*** Use el-get, too
-    Now we can (el-get-bundle foo) and whathaveyou
-#+BEGIN_SRC emacs-lisp
-;(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-;(unless (require 'el-get nil 'noerror)
-;  (require 'package)
-;  (add-to-list 'package-archives
-;               '("melpa" . "http://melpa.org/packages/"))
-;  (package-refresh-contents)
-;  (package-initialize)
-;  (package-install 'el-get)
-;  (require 'el-get))
-  
-;(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-;(el-get 'sync)
-#+END_SRC
-**** TODO Figure out if we still need use-package or what?
 ** Pathing is silly
    Use the shell's path, not stupid Mac OS path
 #+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+  (use-package exec-path-from-shell)
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
 #+END_SRC
 ** Custom is sillier
    No clutter from custom in =.emacs=
@@ -55,24 +37,15 @@ evaluating this file.
   (setq custom-file "~/init-custom.el")
   (load-file custom-file)
 #+END_SRC
-** Shortcut to init
-   find-init-file quickly
+** Splash screen is also silly (for now)
+   Be rid of it until you find a more useful one
 #+BEGIN_SRC emacs-lisp
-  (defun init-file ()
-    "Return full path to init, resolving symlinks"
-    (let* ((file-name (expand-file-name "~/init.org"))
-           (symlink-target (file-symlink-p file-name)))
-      (or symlink-target file-name)))
-
-  (defun find-init-file ()
-    (interactive)
-    (find-file (init-file)))
+  (setq inhibit-splash-screen t)
 #+END_SRC
-*** TODO Make this work when not in home 
-    something is being dumb and relative
 * Packages and config
   Emacs has good functions, but let's add gooderer ones
-** Evil, etc
+** Bindings
+*** Evil, etc
    Can't be too holy, after all
 *** Evil
     Vi til I die
@@ -82,23 +55,6 @@ evaluating this file.
     :config (evil-mode 1))
   (require 'evil)
 #+END_SRC
-*** Evil Leader
-    This is a dictatorship
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-leader
-    :demand
-    :config (progn
-              (setq evil-leader/in-all-states t)
-              (global-evil-leader-mode)))
-  (require 'evil-leader)
-#+END_SRC
-*** Local Leader
-    Actually use this below
-#+BEGIN_SRC emacs-lisp
-  (defvar local-leader-map (make-sparse-keymap)
-    "Keymap for local \"leader key\" shortcuts.")
-  (define-key evil-normal-state-map "," local-leader-map)
-#+END_SRC
 *** Some Extra Evil Packages
     Misery loves company
 **** We have you surrounded
@@ -107,23 +63,38 @@ evaluating this file.
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 #+END_SRC
+*** General.el
+    It claims to be a more evil-leader
+#+BEGIN_SRC emacs-lisp
+  (use-package general
+    :demand)
+  (require 'general)
+#+END_SRC
 ** Navigation
+*** Which key?
+    So we can see what's bound to what
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key :demand)
+  (which-key-mode)
+#+END_SRC
 *** Helm
     Because Ivy was a little *too* minimalistic
 #+BEGIN_SRC emacs-lisp
   (use-package helm-core
     :ensure t)
+
   (use-package helm
     :ensure t
     :config (progn
               (setq helm-buffers-fuzzy-matching t)
               (helm-mode 1)))
+
   (use-package helm-descbinds
     :ensure t)
   ; TODO helm-swoop if it looks coole
+
   (use-package helm-ag
     :ensure helm-ag)
-    
 #+END_SRC
 *** Projectile
     Manage yo shit
@@ -138,7 +109,13 @@ evaluating this file.
     (setq projectile-completion-system 'ivy))
 
   (use-package helm-projectile
-    :ensure t)
+    :ensure t
+    ;:general 
+    ;(project-stuff-map
+      ;:wk-full-keys nil
+      ;"f" '(helm-projectile-find-file-dwim :wk "find file")
+      ;"s" '(helm-projectile-ag :wk "search")))
+    )
 #+END_SRC
 *** Counsel
     Clearly, it does something.
@@ -153,23 +130,17 @@ evaluating this file.
   )
 #+END_SRC
 **** TODO learn why we care about this package
-*** Which key?
-    So we can see what's bound to what
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key :demand)
-  (which-key-mode)
-#+END_SRC
 ** Search
 *** Ag
     The silver surfer will probably be replaced by faster search someday.
-Heavy is the head that wears the crown.
+    Heavy is the head that wears the crown.
 #+BEGIN_SRC emacs-lisp
-(use-package ag
-  :ensure t
-  :config
-  (add-hook 'ag-mode-hook 'toggle-truncate-lines)
-  (setq ag-highlight-search t)
-  (setq ag-reuse-buffers 't))
+  (use-package ag
+    :ensure t
+    :config
+    (add-hook 'ag-mode-hook 'toggle-truncate-lines)
+    (setq ag-highlight-search t)
+    (setq ag-reuse-buffers 't))
 #+END_SRC
 ** Completion and Checking
    Flycheck seemed good, let's also try company
@@ -210,6 +181,7 @@ Heavy is the head that wears the crown.
     (add-hook 'python-mode-hook 'my/python-mode-hook)
     (add-to-list 'company-backends 'company-go)
     (setq company-dabbrev-downcase nil))
+  (require 'company)
 #+END_SRC
 *** Flycheck
 #+BEGIN_SRC emacs-lisp
@@ -222,6 +194,7 @@ Heavy is the head that wears the crown.
     (add-hook 'sh-mode-hook 'flycheck-mode)
     (add-hook 'rst-mode-hook 'flycheck-mode)
     (add-hook 'js-mode-hook 'flycheck-mode))
+  (require 'flycheck)
 #+END_SRC
 ** Org
    Installed by bootstrap, hence the cool org-ified init file.
@@ -265,13 +238,14 @@ Heavy is the head that wears the crown.
     Is awesome, use it.
 #+BEGIN_SRC emacs-lisp
   (use-package magit)
-  (use-package evil-magit
-    :ensure t)
+  (use-package evil-magit :ensure t)
+  (require 'evil-magit)
 #+END_SRC
 **** TODO Add git timemachine 
 ** Paredit and lisp thisgs
 #+BEGIN_SRC emacs-lisp
   (use-package paredit)
+  (require 'paredit)
   ; The below could use auditing and maybe expanding to make this file work with paredit too
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -281,7 +255,177 @@ Heavy is the head that wears the crown.
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 #+END_SRC
-** Slack maybe?
+* Keybindings
+** Buffers
+#+BEGIN_SRC emacs-lisp
+  (defvar buffer-stuff-map (make-sparse-keymap)
+    "Buffer Shortcuts")
+  (general-define-key
+    :keymaps 'buffer-stuff-map
+    :wk-full-keys nil
+    "b" '(buffer-menu :wk "buffers"))
+#+END_SRC
+** Project
+#+BEGIN_SRC emacs-lisp
+  (defvar project-stuff-map (make-sparse-keymap)
+    "Project Shortcuts")
+  (general-define-key
+    :keymaps 'project-stuff-map
+    :wk-full-keys nil
+    "f" '(helm-projectile-find-file-dwim :wk "find file"))
+#+END_SRC
+** Root Leader Keybindings
+#+BEGIN_SRC emacs-lisp
+  (general-create-definer zee-leader :keymaps 'normal :prefix "SPC")
+  (zee-leader
+    "" '(nil :which-key "Leader")
+    "SPC" 'execute-extended-command
+    "p" '(:keymap project-stuff-map :which-key "project")
+    "b" '(:keymap buffer-stuff-map :which-key "buffers")
+    "g" '(:ignore t :which-key "git")
+    "h" '(:ignore t :which-key "halp"))
+#+END_SRC
+** Core Keybindings
+   Help, etc
+*** Help
+#+BEGIN_SRC emacs-lisp
+  ;(general-define-key :prefix "SPC h"
+    ;"h" 'help-command)
+  
+  ;(declare-named-prefix "h" "halp")
+  ;(evil-leader/set-key "hh" 'help-command)
+#+END_SRC
+** Buffers
+   Everything's a buffer, man
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "b" "buffers")
+  ;(evil-leader/set-key "bb" 'buffer-menu)
+#+END_SRC
+** Files
+   Every buffer on disk is a file, or something like that
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "f" "files")
+  ;(evil-leader/set-key "ff" 'find-file)
+#+END_SRC
+** Dirs
+   Directories are just files of files, but they are special
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "d" "directories")
+  ;(evil-leader/set-key "dd" 'dired)
+#+END_SRC
+** Procs
+   Processes are, like, buffers in action or maybe they're files come to 
+life and maybe life is just a stream of ones, zeros, and the occasional 
+null to keep it interesting and piss off the static typers?
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "P" "processes")
+  ;(evil-leader/set-key "Pp" 'proced)
+#+END_SRC
+** Search
+   If you can't find it, does it really exist?
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "s" "search")
+  ;(evil-leader/set-key "sp" 'helm-projectile-ag)
+  ;(evil-leader/set-key "sa" 'counsel-ag)
+#+END_SRC
+** Org
+   This'll need a lot of work
+#+BEGIN_SRC emacs-lisp
+  ;(evil-leader/set-key-for-mode 'org-mode
+  ;  "TAB" 'org-cycle
+  ;  "t" 'org-todo)
+#+END_SRC
+*** TODO Add more org keys or use a package
+** Magit
+   Is really awesome
+#+BEGIN_SRC emacs-lisp
+;(evil-leader/set-key "g" 'magit-status)
+
+;(defun my-setup-local-with-editor-keys ()
+  ;(evil-local-set-key 'normal ",," 'with-editor-finish)
+  ;(evil-local-set-key 'normal ",k" 'with-editor-cancel))
+
+;(add-hook 'with-editor-mode-hook #'my-setup-local-with-editor-keys)
+#+END_SRC
+*** TODO Add hotkey for blame
+*** TODO Make q quit in blame
+** Lispy Things
+   Probably move these somewhere else someday
+#+BEGIN_SRC emacs-lisp
+  ;(declare-named-prefix "l" "lisp")
+  ;(evil-leader/set-key "ll" 'eval-last-sexp)
+#+END_SRC
+
+** Multiterm
+#+BEGIN_SRC emacs-lisp
+  ;(evil-leader/set-key "'" 'multi-term)
+
+;(add-hook 'term-mode-hook
+          ;(lambda ()
+            ;(add-to-list 'term-bind-key-alist '(",p" . multi-term-prev))
+            ;(add-to-list 'term-bind-key-alist '(",n" . multi-term-next))))
+#+END_SRC
+** Moar Keybindings
+   Misc shit
+#+BEGIN_SRC emacs-lisp
+  ;(evil-leader/set-key "." 'find-init-file)
+  ;; what's this for?
+  ;(setq-default indent-tabs-mode nil)
+#+END_SRC
+*** TODO Move these somewhere better
+* GUI, Theme and Font
+  Nicer font, solarized, no GUI, statusbar
+#+BEGIN_SRC emacs-lisp
+;(use-package color-theme-sanityinc-solarized)
+;(color-theme-sanityinc-solarized-light)
+;(color-theme-sanityinc-solarized-dark)
+(use-package github-modern-theme)
+;(load-theme 'github-modern t)
+(load-theme 'tango-dark t)
+
+(set-face-attribute 'default nil
+                    :family "Source Code Pro"
+                    :height 160
+                    :weight 'normal
+                    :width 'normal)
+
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+(tool-bar-mode -1)
+
+;; TODO MOve to packages area
+(use-package smart-mode-line-powerline-theme)
+(use-package smart-mode-line)
+(setq sml/theme 'respectful)
+(sml/setup)
+#+END_SRC
+* Old, but interesting inner workings
+** +DIY Leader+
+   Keep it simple, stupid
+#+BEGIN_SRC emacs-lisp
+  ;(defvar base-leader-map (make-sparse-keymap)
+    ;"Base leader keymap")
+  ;(define-key evil-normal-state-map (kbd "SPC") base-leader-map)
+#+END_SRC
+** +Add the ability to name prefixes+
+   Blatantly stolen from spacemacs
+#+BEGIN_SRC emacs-lisp
+  ;(defun declare-named-prefix (prefix name &optional long-name)
+    ;(let* ((command name)
+           ;(full-prefix (concat evil-leader/leader " " prefix))
+           ;(full-prefix-emacs (concat evil-leader/leader " " prefix))
+           ;(full-prefix-lst (listify-key-sequence (kbd full-prefix)))
+           ;(full-prefix-emacs-lst (listify-key-sequence
+                                   ;(kbd full-prefix-emacs))))
+      ;(unless long-name (setq long-name name))
+      ;(which-key-declare-prefixes
+        ;full-prefix-emacs (cons name long-name)
+        ;full-prefix (cons name long-name)))) 
+
+  ;; Not sure we need this 
+  ;(put 'declare-named-prefix 'lisp-indent-function 'defun)
+#+END_SRC
+** +Slack maybe?+
 #+BEGIN_SRC emacs-lisp
 ;(el-get-bundle slack)
 ;(use-package oauth2)
@@ -340,139 +484,3 @@ Heavy is the head that wears the crown.
 ;  (setq alert-default-style 'notifier))
 #+END_SRC
 
-* Keybindings and whatnot
-** Elect Evil Leader and its henchman M-x M-x
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-leader "SPC")
-  (evil-leader/set-key "SPC" 'execute-extended-command)
-#+END_SRC
-** Add the ability to name prefixes
-   Blatantly stolen from spacemacs
-#+BEGIN_SRC emacs-lisp
-  (defun declare-named-prefix (prefix name &optional long-name)
-    (let* ((command name)
-           (full-prefix (concat evil-leader/leader " " prefix))
-           (full-prefix-emacs (concat evil-leader/leader " " prefix))
-           (full-prefix-lst (listify-key-sequence (kbd full-prefix)))
-           (full-prefix-emacs-lst (listify-key-sequence
-                                   (kbd full-prefix-emacs))))
-      (unless long-name (setq long-name name))
-      (which-key-declare-prefixes
-        full-prefix-emacs (cons name long-name)
-        full-prefix (cons name long-name)))) 
-
-  ;; Not sure we need this 
-  (put 'declare-named-prefix 'lisp-indent-function 'defun)
-#+END_SRC
-** Core Keybindings
-   Help, etc
-*** Help
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "h" "halp")
-  (evil-leader/set-key "hh" 'help-command)
-#+END_SRC
-** Buffers
-   Everything's a buffer, man
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "b" "buffers")
-  (evil-leader/set-key "bb" 'buffer-menu)
-#+END_SRC
-** Files
-   Every buffer on disk is a file, or something like that
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "f" "files")
-  (evil-leader/set-key "ff" 'find-file)
-#+END_SRC
-** Dirs
-   Directories are just files of files, but they are special
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "d" "directories")
-  (evil-leader/set-key "dd" 'dired)
-#+END_SRC
-** Projectile
-   Projectile will help you find stuff within a project, that's handy.
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "p" "Project")
-  (evil-leader/set-key "pf" 'helm-projectile-find-file-dwim)
-  (evil-leader/set-key "ps" 'helm-projectile-ag)
-#+END_SRC
-** Procs
-   Processes are, like, buffers in action or maybe they're files come to 
-life and maybe life is just a stream of ones, zeros, and the occasional 
-null to keep it interesting and piss off the static typers?
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "P" "processes")
-  (evil-leader/set-key "Pp" 'proced)
-#+END_SRC
-** Search
-   If you can't find it, does it really exist?
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "s" "search")
-  (evil-leader/set-key "sp" 'helm-projectile-ag)
-  (evil-leader/set-key "sa" 'counsel-ag)
-#+END_SRC
-** Org
-   This'll need a lot of work
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key-for-mode 'org-mode
-    "TAB" 'org-cycle
-    "t" 'org-todo)
-#+END_SRC
-*** TODO Add more org keys or use a package
-** Magit
-   Is really awesome
-#+BEGIN_SRC emacs-lisp
-(evil-leader/set-key "g" 'magit-status)
-#+END_SRC
-*** TODO Add hotkey for blame
-*** TODO Make q quit in blame
-** Lispy Things
-   Probably move these somewhere else someday
-#+BEGIN_SRC emacs-lisp
-  (declare-named-prefix "l" "lisp")
-  (evil-leader/set-key "ll" 'eval-last-sexp)
-#+END_SRC
-
-** Multiterm
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "'" 'multi-term)
-
-;(add-hook 'term-mode-hook
-          ;(lambda ()
-            ;(add-to-list 'term-bind-key-alist '(",p" . multi-term-prev))
-            ;(add-to-list 'term-bind-key-alist '(",n" . multi-term-next))))
-#+END_SRC
-** Moar Keybindings
-   Misc shit
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "." 'find-init-file)
-  ;; what's this for?
-  (setq-default indent-tabs-mode nil)
-#+END_SRC
-*** TODO Move these somewhere better
-* GUI, Theme and Font
-  Nicer font, solarized, no GUI, statusbar
-#+BEGIN_SRC emacs-lisp
-;(use-package color-theme-sanityinc-solarized)
-;(color-theme-sanityinc-solarized-light)
-;(color-theme-sanityinc-solarized-dark)
-(use-package github-modern-theme)
-;(load-theme 'github-modern t)
-(load-theme 'tango-dark t)
-
-(set-face-attribute 'default nil
-                    :family "Source Code Pro"
-                    :height 160
-                    :weight 'normal
-                    :width 'normal)
-
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
-
-;; TODO MOve to packages area
-(use-package smart-mode-line-powerline-theme)
-(use-package smart-mode-line)
-(setq sml/theme 'respectful)
-(sml/setup)
-#+END_SRC

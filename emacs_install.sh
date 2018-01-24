@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO update this a bunch
+
 # js deps
 npm install -g tern js-beautify jshint
 
