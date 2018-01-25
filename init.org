@@ -257,6 +257,7 @@ evaluating this file.
 #+END_SRC
 * Keybindings
 ** Buffers
+   Everything's a buffer, man
 #+BEGIN_SRC emacs-lisp
   (defvar buffer-stuff-map (make-sparse-keymap)
     "Buffer Shortcuts")
@@ -265,6 +266,15 @@ evaluating this file.
     :wk-full-keys nil
     "b" '(buffer-menu :wk "buffers"))
 #+END_SRC
+** Files
+#+BEGIN_SRC emacs-lisp
+  (defvar file-stuff-map (make-sparse-keymap)
+    "File Shortcuts")
+  (general-define-key
+    :keymaps 'file-stuff-map
+    :wk-full-keys nil
+    "f" '(find-file :wk "find file"))
+#+END_SRC
 ** Project
 #+BEGIN_SRC emacs-lisp
   (defvar project-stuff-map (make-sparse-keymap)
@@ -272,7 +282,17 @@ evaluating this file.
   (general-define-key
     :keymaps 'project-stuff-map
     :wk-full-keys nil
-    "f" '(helm-projectile-find-file-dwim :wk "find file"))
+    "f" '(helm-projectile-find-file-dwim :wk "find file")
+    "s" '(helm-projectile-ag :wk "search"))
+#+END_SRC
+** Git
+#+BEGIN_SRC emacs-lisp
+  (defvar git-stuff-map (make-sparse-keymap)
+    "Git Shortcuts")
+  (general-define-key
+    :keymaps 'git-stuff-map
+    :wk-full-keys nil
+    "s" '(magit :wk "magit"))
 #+END_SRC
 ** Root Leader Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -282,7 +302,8 @@ evaluating this file.
     "SPC" 'execute-extended-command
     "p" '(:keymap project-stuff-map :which-key "project")
     "b" '(:keymap buffer-stuff-map :which-key "buffers")
-    "g" '(:ignore t :which-key "git")
+    "f" '(:keymap file-stuff-map :which-key "files")
+    "g" '(:keymap git-stuff-map :which-key "git")
     "h" '(:ignore t :which-key "halp"))
 #+END_SRC
 ** Core Keybindings
@@ -294,18 +315,6 @@ evaluating this file.
   
   ;(declare-named-prefix "h" "halp")
   ;(evil-leader/set-key "hh" 'help-command)
-#+END_SRC
-** Buffers
-   Everything's a buffer, man
-#+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "b" "buffers")
-  ;(evil-leader/set-key "bb" 'buffer-menu)
-#+END_SRC
-** Files
-   Every buffer on disk is a file, or something like that
-#+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "f" "files")
-  ;(evil-leader/set-key "ff" 'find-file)
 #+END_SRC
 ** Dirs
    Directories are just files of files, but they are special
