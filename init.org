@@ -224,6 +224,15 @@ evaluating this file.
       (python . t)
       (ditaa . t)))
 #+END_SRC
+*** Capture Templates
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+    '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
+           "TODO %?\n")
+      ("O" "Work One-pager" entry (file+olp "~/org/rover.org" "One-Pagers")
+           "** %?\n*** What?\n*** Why?\n*** How?\n*** Open Questions")
+     ))
+#+END_SRC
 *** TODO Make paredit work in babel'd files
 ** Terminals
    Yay for shell
@@ -294,6 +303,15 @@ evaluating this file.
     :wk-full-keys nil
     "s" '(magit :wk "magit"))
 #+END_SRC
+** Org
+#+BEGIN_SRC emacs-lisp
+  (defvar org-stuff-map (make-sparse-keymap)
+    "Org Shortcuts")
+  (general-define-key
+    :keymaps 'org-stuff-map
+    :wk-full-keys nil
+    "c" '(org-capture :wk "capture"))
+#+END_SRC
 ** Root Leader Keybindings
 #+BEGIN_SRC emacs-lisp
   (general-create-definer zee-leader :keymaps 'normal :prefix "SPC")
@@ -304,6 +322,7 @@ evaluating this file.
     "b" '(:keymap buffer-stuff-map :which-key "buffers")
     "f" '(:keymap file-stuff-map :which-key "files")
     "g" '(:keymap git-stuff-map :which-key "git")
+    "o" '(:keymap org-stuff-map :which-key "org")
     "h" '(:ignore t :which-key "halp"))
 #+END_SRC
 ** Core Keybindings
