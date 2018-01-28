@@ -265,90 +265,117 @@ evaluating this file.
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 #+END_SRC
 * Keybindings
+** Leaders
+#+BEGIN_SRC emacs-lisp
+  (general-create-definer global-leader :keymaps 'normal :prefix "SPC")
+  (global-leader
+    "" '(nil :which-key "global leader")
+    "SPC" '(execute-extended-command :which-key "execute"))
+
+  (general-create-definer local-leader :keymaps 'normal :prefix ",")
+  (local-leader "" '(nil :wk "local leader"))
+#+END_SRC
 ** Buffers
    Everything's a buffer, man
 #+BEGIN_SRC emacs-lisp
-  (defvar buffer-stuff-map (make-sparse-keymap)
-    "Buffer Shortcuts")
+  (defvar buffer-global-map (make-sparse-keymap) "buffer shortcuts")
   (general-define-key
-    :keymaps 'buffer-stuff-map
+    :keymaps 'buffer-global-map
     :wk-full-keys nil
-    "b" '(buffer-menu :wk "buffers"))
+    "b" '(buffer-menu :wk "buffers")
+    "n" '(next-buffer :wk "next")
+    "p" '(previous-buffer :wk "prev"))
+  (global-leader "b" '(:keymap buffer-global-map :wk "buffers"))
 #+END_SRC
 ** Files
 #+BEGIN_SRC emacs-lisp
-  (defvar file-stuff-map (make-sparse-keymap)
-    "File Shortcuts")
+  (defvar file-global-map (make-sparse-keymap) "file shortcuts")
   (general-define-key
-    :keymaps 'file-stuff-map
+    :keymaps 'file-global-map
     :wk-full-keys nil
     "f" '(find-file :wk "find file"))
+  (global-leader "f" '(:keymap file-global-map :wk "files"))
+#+END_SRC
+** Directories
+#+BEGIN_SRC emacs-lisp
+  (defvar dirs-global-map (make-sparse-keymap) "dirs shortcuts")
+  (general-define-key
+    :keymaps 'dirs-global-map
+    :wk-full-keys nil
+    "d" '(dired :wk "dired"))
+  (global-leader "d" '(:keymap dirs-global-map :wk "dirs"))
 #+END_SRC
 ** Project
 #+BEGIN_SRC emacs-lisp
-  (defvar project-stuff-map (make-sparse-keymap)
-    "Project Shortcuts")
+  (defvar project-global-map (make-sparse-keymap) "project shortcuts")
   (general-define-key
-    :keymaps 'project-stuff-map
+    :keymaps 'project-global-map
     :wk-full-keys nil
     "f" '(helm-projectile-find-file-dwim :wk "find file")
     "s" '(helm-projectile-ag :wk "search"))
-#+END_SRC
-** Git
-#+BEGIN_SRC emacs-lisp
-  (defvar git-stuff-map (make-sparse-keymap)
-    "Git Shortcuts")
-  (general-define-key
-    :keymaps 'git-stuff-map
-    :wk-full-keys nil
-    "s" '(magit :wk "magit"))
-#+END_SRC
-** Org
-#+BEGIN_SRC emacs-lisp
-  (defvar org-stuff-map (make-sparse-keymap)
-    "Org Shortcuts")
-  (general-define-key
-    :keymaps 'org-stuff-map
-    :wk-full-keys nil
-    "c" '(org-capture :wk "capture"))
-#+END_SRC
-** Root Leader Keybindings
-#+BEGIN_SRC emacs-lisp
-  (general-create-definer zee-leader :keymaps 'normal :prefix "SPC")
-  (zee-leader
-    "" '(nil :which-key "Leader")
-    "SPC" 'execute-extended-command
-    "p" '(:keymap project-stuff-map :which-key "project")
-    "b" '(:keymap buffer-stuff-map :which-key "buffers")
-    "f" '(:keymap file-stuff-map :which-key "files")
-    "g" '(:keymap git-stuff-map :which-key "git")
-    "o" '(:keymap org-stuff-map :which-key "org")
-    "h" '(:ignore t :which-key "halp"))
-#+END_SRC
-** Core Keybindings
-   Help, etc
-*** Help
-#+BEGIN_SRC emacs-lisp
-  ;(general-define-key :prefix "SPC h"
-    ;"h" 'help-command)
-  
-  ;(declare-named-prefix "h" "halp")
-  ;(evil-leader/set-key "hh" 'help-command)
-#+END_SRC
-** Dirs
-   Directories are just files of files, but they are special
-#+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "d" "directories")
-  ;(evil-leader/set-key "dd" 'dired)
+  (global-leader "p" '(:keymap project-global-map :wk "project"))
 #+END_SRC
 ** Procs
    Processes are, like, buffers in action or maybe they're files come to 
 life and maybe life is just a stream of ones, zeros, and the occasional 
 null to keep it interesting and piss off the static typers?
 #+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "P" "processes")
-  ;(evil-leader/set-key "Pp" 'proced)
+  (defvar process-global-map (make-sparse-keymap) "process shortcuts")
+  (general-define-key
+    :keymaps 'process-global-map
+    :wk-full-keys nil
+    "p" '(proced :wk "processes"))
+  (global-leader "P" '(:keymap process-global-map :wk "process"))
 #+END_SRC
+** Git
+#+BEGIN_SRC emacs-lisp
+  (defvar git-global-map (make-sparse-keymap) "Git Shortcuts")
+  (general-define-key
+    :keymaps 'git-global-map
+    :wk-full-keys nil
+    "b" '(magit-blame :wk "blame")
+    "s" '(magit :wk "magit"))
+  (global-leader "g" '(:keymap git-global-map :which-key "git"))
+#+END_SRC
+** Org
+#+BEGIN_SRC emacs-lisp
+  (defvar org-global-map (make-sparse-keymap) "org global shortcuts")
+  (general-define-key
+    :keymaps 'org-global-map
+    :wk-full-keys nil
+    "c" '(org-capture :wk "capture"))
+  (global-leader "o" '(:keymap org-global-map :which-key "org"))
+
+  (defvar org-local-map (make-sparse-keymap) "org local shortcuts")
+  (general-define-key
+    :keymaps 'org-local-map
+    :package 'org
+    :wk-full-keys nil
+    "p" '(org-set-property :wk "set property")
+    "t" '(org-set-tags-command :wk "set tags"))
+  (local-leader
+    :package 'org
+    :major-modes 'org-mode
+    :keymaps 'normal
+    "" '(:keymap org-local-map :which-key "org local"))
+
+  (general-define-key
+    :package 'org
+    :major-modes 'org-mode
+    :keymaps 'normal
+    "TAB" 'org-cycle
+    "t" 'org-todo)
+#+END_SRC
+** Help
+#+BEGIN_SRC emacs-lisp
+  (defvar help-global-map (make-sparse-keymap) "help shortcuts")
+  (general-define-key
+    :keymaps 'help-global-map
+    :wk-full-keys nil
+    "h" '(help-command :wk "help"))
+  (global-leader "h" '(:keymap help-global-map :wk "halp"))
+#+END_SRC
+** Core Keybindings
 ** Search
    If you can't find it, does it really exist?
 #+BEGIN_SRC emacs-lisp
@@ -356,27 +383,17 @@ null to keep it interesting and piss off the static typers?
   ;(evil-leader/set-key "sp" 'helm-projectile-ag)
   ;(evil-leader/set-key "sa" 'counsel-ag)
 #+END_SRC
-** Org
-   This'll need a lot of work
-#+BEGIN_SRC emacs-lisp
-  ;(evil-leader/set-key-for-mode 'org-mode
-  ;  "TAB" 'org-cycle
-  ;  "t" 'org-todo)
-#+END_SRC
-*** TODO Add more org keys or use a package
 ** Magit
    Is really awesome
 #+BEGIN_SRC emacs-lisp
-;(evil-leader/set-key "g" 'magit-status)
-
 ;(defun my-setup-local-with-editor-keys ()
   ;(evil-local-set-key 'normal ",," 'with-editor-finish)
   ;(evil-local-set-key 'normal ",k" 'with-editor-cancel))
 
 ;(add-hook 'with-editor-mode-hook #'my-setup-local-with-editor-keys)
 #+END_SRC
-*** TODO Add hotkey for blame
-*** TODO Make q quit in blame
+*** DONE Add hotkey for blame
+*** DONE Make q quit in blame
 ** Lispy Things
    Probably move these somewhere else someday
 #+BEGIN_SRC emacs-lisp
@@ -397,16 +414,11 @@ null to keep it interesting and piss off the static typers?
    Misc shit
 #+BEGIN_SRC emacs-lisp
   ;(evil-leader/set-key "." 'find-init-file)
-  ;; what's this for?
-  ;(setq-default indent-tabs-mode nil)
 #+END_SRC
 *** TODO Move these somewhere better
 * GUI, Theme and Font
   Nicer font, solarized, no GUI, statusbar
 #+BEGIN_SRC emacs-lisp
-;(use-package color-theme-sanityinc-solarized)
-;(color-theme-sanityinc-solarized-light)
-;(color-theme-sanityinc-solarized-dark)
 (use-package github-modern-theme)
 ;(load-theme 'github-modern t)
 (load-theme 'tango-dark t)
@@ -512,3 +524,4 @@ null to keep it interesting and piss off the static typers?
 ;  (setq alert-default-style 'notifier))
 #+END_SRC
 
+   
