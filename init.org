@@ -47,10 +47,7 @@ evaluating this file.
 #+END_SRC
 * Packages and config
   Emacs has good functions, but let's add gooderer ones
-** Bindings
-*** Evil, etc
-   Can't be too holy, after all
-*** Evil
+** Evil
     Vi til I die
 #+BEGIN_SRC emacs-lisp
   (use-package evil
@@ -66,7 +63,7 @@ evaluating this file.
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 #+END_SRC
-*** General.el
+** General.el
     It claims to be a more evil-leader
 #+BEGIN_SRC emacs-lisp
   (use-package general
@@ -133,8 +130,7 @@ evaluating this file.
   )
 #+END_SRC
 **** TODO learn why we care about this package
-** Search
-*** Ag
+** Ag
     The silver surfer will probably be replaced by faster search someday.
     Heavy is the head that wears the crown.
 #+BEGIN_SRC emacs-lisp
@@ -236,17 +232,18 @@ evaluating this file.
            "** %?\n*** What?\n*** Why?\n*** How?\n*** Open Questions")
      ))
 #+END_SRC
+*** Agenda
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files '("~/org/" "~/dotfiles/init.org"))
+#+END_SRC
 *** TODO Make paredit work in babel'd files
-** Terminals
+** Multi-term
    Yay for shell
-*** Terminals are like buffers, you need more than one
 #+BEGIN_SRC emacs-lisp
   (use-package multi-term)
   (setq multi-term-program "/bin/zsh")
 #+END_SRC
-** VC
-   You can't have holy evil without some amount of control
-*** Magit
+** Magit
     Is awesome, use it.
 #+BEGIN_SRC emacs-lisp
   (use-package magit)
@@ -266,6 +263,27 @@ evaluating this file.
   (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+#+END_SRC
+** Smart Mode Line
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-mode-line)
+  (use-package smart-mode-line-powerline-theme)
+  (setq sml/theme 'light)
+  (sml/setup)
+#+END_SRC
+** Themes
+#+BEGIN_SRC emacs-lisp
+  (use-package github-modern-theme)
+  (load-theme 'github-modern t)
+  ;(load-theme 'tango-dark t)
+#+END_SRC
+** Font
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil
+    :family "Source Code Pro"
+    :height 180
+    :weight 'normal
+    :width 'normal)
 #+END_SRC
 * Keybindings
 ** Leaders
@@ -443,25 +461,6 @@ null to keep it interesting and piss off the static typers?
     :wk-full-keys nil
     "l" 'eval-last-sexp)
   (global-leader "l" '(:keymap lisp-global-map :wk "search"))
-#+END_SRC
-* GUI, Theme and Font
-  Nicer font, solarized, no GUI, statusbar
-#+BEGIN_SRC emacs-lisp
-(use-package github-modern-theme)
-(load-theme 'github-modern t)
-;(load-theme 'tango-dark t)
-
-(set-face-attribute 'default nil
-                    :family "Source Code Pro"
-                    :height 180
-                    :weight 'normal
-                    :width 'normal)
-
-;; TODO MOve to packages area
-(use-package smart-mode-line-powerline-theme)
-(use-package smart-mode-line)
-(setq sml/theme 'light)
-(sml/setup)
 #+END_SRC
 * Old, but interesting inner workings
 ** +DIY Leader+
