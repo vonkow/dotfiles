@@ -4,9 +4,9 @@
 things. This includes calling package-initialize and loading org before 
 evaluating this file.
 ** All about Packages
-   Gotta configure how we get packages before getting them, duh
+   Gotta configure how we get packages before getting them
 *** Other repos
-    ELPA is cool, but MELPA is ice cold. Get packages from both.
+    Get packages from (m)elpa
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (add-to-list 'package-archives 
@@ -37,10 +37,13 @@ evaluating this file.
   (setq custom-file "~/init-custom.el")
   (load-file custom-file)
 #+END_SRC
-** Splash screen is also silly (for now)
-   Be rid of it until you find a more useful one
+** Menus, scrollbars, toolbars, and splash screens
+   Be rid of them until you find useful versions
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-splash-screen t)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (toggle-scroll-bar -1)
 #+END_SRC
 * Packages and config
   Emacs has good functions, but let's add gooderer ones
@@ -336,6 +339,16 @@ null to keep it interesting and piss off the static typers?
     "b" '(magit-blame :wk "blame")
     "s" '(magit :wk "magit"))
   (global-leader "g" '(:keymap git-global-map :which-key "git"))
+
+  (local-leader
+    :package 'magit
+    :definer 'minor-mode
+    ;:minor-modes 'global-git-commit
+    :states 'normal
+    :keymaps 'with-editor-mode
+    "," '(with-editor-finish :wk "commit")
+    "c" '(with-editor-finish :wk "commit")
+    "k" '(with-editor-cancel :wk "cancel"))
 #+END_SRC
 ** Org
 #+BEGIN_SRC emacs-lisp
@@ -357,7 +370,7 @@ null to keep it interesting and piss off the static typers?
     :package 'org
     :major-modes 'org-mode
     :keymaps 'normal
-    "" '(:keymap org-local-map :which-key "org local"))
+    "" '(:keymap org-local-map :wk "org local"))
 
   (general-define-key
     :package 'org
@@ -365,6 +378,42 @@ null to keep it interesting and piss off the static typers?
     :keymaps 'normal
     "TAB" 'org-cycle
     "t" 'org-todo)
+
+  (local-leader
+    :package 'org
+    :definer 'minor-mode
+    :states 'normal
+    :keymaps 'org-capture-mode
+    "," '(org-capture-finish :wk "finish")
+    "c" '(org-capture-finish :wk "finish")
+    "w" '(org-capture-refile :wk "refile")
+    "k" '(org-capture-kill :wk "kill"))
+#+END_SRC
+** Term
+*** TODO Make multi-term-next/prev work (and create)
+#+BEGIN_SRC emacs-lisp
+  (global-leader "'" '(multi-term-dedicated-toggle :wk "term"))
+
+  (defvar term-local-map (make-sparse-keymap) "term local shortcuts")
+  (general-define-key
+    :keymaps 'term-local-map
+    :package 'multi-term
+    :wk-full-keys nil
+    "n" '(multi-term-next :wk "next")
+    "p" '(multi-term-prev :wk "prev")
+    "c" '(multi-term :wk "create"))
+  (local-leader
+    :package 'multi-term
+    :major-modes 'term
+    :keymaps 'normal
+    "" '(:keymap term-local-map :wk "term local"))
+  
+  ;(evil-leader/set-key "'" 'multi-term)
+
+;(add-hook 'term-mode-hook
+          ;(lambda ()
+            ;(add-to-list 'term-bind-key-alist '(",p" . multi-term-prev))
+            ;(add-to-list 'term-bind-key-alist '(",n" . multi-term-next))))
 #+END_SRC
 ** Help
 #+BEGIN_SRC emacs-lisp
@@ -375,68 +424,43 @@ null to keep it interesting and piss off the static typers?
     "h" '(help-command :wk "help"))
   (global-leader "h" '(:keymap help-global-map :wk "halp"))
 #+END_SRC
-** Core Keybindings
 ** Search
    If you can't find it, does it really exist?
 #+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "s" "search")
-  ;(evil-leader/set-key "sp" 'helm-projectile-ag)
-  ;(evil-leader/set-key "sa" 'counsel-ag)
+  (defvar search-global-map (make-sparse-keymap) "search")
+  (general-define-key
+    :keymaps 'search-global-map
+    :wk-full-keys nil
+    "a" '(counsel-ag :wk "ag"))
+  (global-leader "s" '(:keymap search-global-map :wk "search"))
 #+END_SRC
-** Magit
-   Is really awesome
-#+BEGIN_SRC emacs-lisp
-;(defun my-setup-local-with-editor-keys ()
-  ;(evil-local-set-key 'normal ",," 'with-editor-finish)
-  ;(evil-local-set-key 'normal ",k" 'with-editor-cancel))
-
-;(add-hook 'with-editor-mode-hook #'my-setup-local-with-editor-keys)
-#+END_SRC
-*** DONE Add hotkey for blame
-*** DONE Make q quit in blame
 ** Lispy Things
-   Probably move these somewhere else someday
+*** TODO Probably move these somewhere else someday
 #+BEGIN_SRC emacs-lisp
-  ;(declare-named-prefix "l" "lisp")
-  ;(evil-leader/set-key "ll" 'eval-last-sexp)
+  (defvar lisp-global-map (make-sparse-keymap) "lisp")
+  (general-define-key
+    :keymaps 'lisp-global-map
+    :wk-full-keys nil
+    "l" 'eval-last-sexp)
+  (global-leader "l" '(:keymap lisp-global-map :wk "search"))
 #+END_SRC
-
-** Multiterm
-#+BEGIN_SRC emacs-lisp
-  ;(evil-leader/set-key "'" 'multi-term)
-
-;(add-hook 'term-mode-hook
-          ;(lambda ()
-            ;(add-to-list 'term-bind-key-alist '(",p" . multi-term-prev))
-            ;(add-to-list 'term-bind-key-alist '(",n" . multi-term-next))))
-#+END_SRC
-** Moar Keybindings
-   Misc shit
-#+BEGIN_SRC emacs-lisp
-  ;(evil-leader/set-key "." 'find-init-file)
-#+END_SRC
-*** TODO Move these somewhere better
 * GUI, Theme and Font
   Nicer font, solarized, no GUI, statusbar
 #+BEGIN_SRC emacs-lisp
 (use-package github-modern-theme)
-;(load-theme 'github-modern t)
-(load-theme 'tango-dark t)
+(load-theme 'github-modern t)
+;(load-theme 'tango-dark t)
 
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
-                    :height 160
+                    :height 180
                     :weight 'normal
                     :width 'normal)
-
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
 
 ;; TODO MOve to packages area
 (use-package smart-mode-line-powerline-theme)
 (use-package smart-mode-line)
-(setq sml/theme 'respectful)
+(setq sml/theme 'light)
 (sml/setup)
 #+END_SRC
 * Old, but interesting inner workings
@@ -446,24 +470,6 @@ null to keep it interesting and piss off the static typers?
   ;(defvar base-leader-map (make-sparse-keymap)
     ;"Base leader keymap")
   ;(define-key evil-normal-state-map (kbd "SPC") base-leader-map)
-#+END_SRC
-** +Add the ability to name prefixes+
-   Blatantly stolen from spacemacs
-#+BEGIN_SRC emacs-lisp
-  ;(defun declare-named-prefix (prefix name &optional long-name)
-    ;(let* ((command name)
-           ;(full-prefix (concat evil-leader/leader " " prefix))
-           ;(full-prefix-emacs (concat evil-leader/leader " " prefix))
-           ;(full-prefix-lst (listify-key-sequence (kbd full-prefix)))
-           ;(full-prefix-emacs-lst (listify-key-sequence
-                                   ;(kbd full-prefix-emacs))))
-      ;(unless long-name (setq long-name name))
-      ;(which-key-declare-prefixes
-        ;full-prefix-emacs (cons name long-name)
-        ;full-prefix (cons name long-name)))) 
-
-  ;; Not sure we need this 
-  ;(put 'declare-named-prefix 'lisp-indent-function 'defun)
 #+END_SRC
 ** +Slack maybe?+
 #+BEGIN_SRC emacs-lisp
