@@ -386,7 +386,7 @@ null to keep it interesting and piss off the static typers?
     "t" '(org-set-tags-command :wk "set tags"))
   (local-leader
     :package 'org
-    :major-modes 'org-mode
+    :major-modes '(org-mode t)
     :keymaps 'normal
     "" '(:keymap org-local-map :wk "org local"))
 
@@ -406,6 +406,15 @@ null to keep it interesting and piss off the static typers?
     "c" '(org-capture-finish :wk "finish")
     "w" '(org-capture-refile :wk "refile")
     "k" '(org-capture-kill :wk "kill"))
+#+END_SRC
+** Text
+#+BEGIN_SRC emacs-lisp
+  (defvar text-global-map (make-sparse-keymap) "Text Shortcuts")
+  (general-define-key
+    :keymaps 'text-global-map
+    :wk-full-keys nil
+    "p" 'fill-paragraph)
+  (global-leader "t" '(:keymap text-global-map :wk "text"))
 #+END_SRC
 ** Term
 *** TODO Make multi-term-next/prev work (and create)
