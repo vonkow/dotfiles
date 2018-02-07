@@ -251,6 +251,12 @@ evaluating this file.
   (require 'evil-magit)
 #+END_SRC
 **** TODO Add git timemachine 
+** Perspective
+#+BEGIN_SRC emacs-lisp
+  (use-package perspective)
+  (require 'perspective)
+  (persp-mode)
+#+END_SRC
 ** Paredit and lisp thisgs
 #+BEGIN_SRC emacs-lisp
   (use-package paredit)
@@ -268,8 +274,10 @@ evaluating this file.
 #+BEGIN_SRC emacs-lisp
   (use-package smart-mode-line)
   (use-package smart-mode-line-powerline-theme)
+  (require 'smart-mode-line)
   (setq sml/theme 'light)
   (sml/setup)
+  (setq sml/theme 'light)
 #+END_SRC
 ** Themes
 #+BEGIN_SRC emacs-lisp
@@ -295,6 +303,10 @@ evaluating this file.
 
   (general-create-definer local-leader :keymaps 'normal :prefix ",")
   (local-leader "" '(nil :wk "local leader"))
+#+END_SRC
+** Perspective
+#+BEGIN_SRC emacs-lisp
+  (global-leader "l" '(:keymap perspective-map :wk "buffers"))
 #+END_SRC
 ** Buffers
    Everything's a buffer, man
@@ -469,7 +481,7 @@ null to keep it interesting and piss off the static typers?
     :keymaps 'lisp-global-map
     :wk-full-keys nil
     "l" 'eval-last-sexp)
-  (global-leader "l" '(:keymap lisp-global-map :wk "search"))
+  (global-leader "k" '(:keymap lisp-global-map :wk "lispy things"))
 #+END_SRC
 * Old, but interesting inner workings
 ** +DIY Leader+
