@@ -79,6 +79,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+
+export DOCKER_BETA=1
 source $HOME/projects/web/profile
 # source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
 

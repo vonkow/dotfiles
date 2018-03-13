@@ -45,6 +45,10 @@ evaluating this file.
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
 #+END_SRC
+** Death to tabs
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
 * Packages and config
   Emacs has good functions, but let's add gooderer ones
 ** Evil
@@ -227,9 +231,9 @@ evaluating this file.
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
     '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
-           "TODO %?\n")
-      ("O" "Work One-pager" entry (file+olp "~/org/rover.org" "One-Pagers")
-           "** %?\n*** What?\n*** Why?\n*** How?\n*** Open Questions")
+           "**** TODO %?\n")
+      ;("O" "Work One-pager" entry (file+olp "~/org/rover.org" "One-Pagers")
+          ; "** %?\n*** What?\n*** Why?\n*** How?\n*** Open Questions")
      ))
 #+END_SRC
 *** Agenda
@@ -277,7 +281,6 @@ evaluating this file.
   (require 'smart-mode-line)
   (setq sml/theme 'light)
   (sml/setup)
-  (setq sml/theme 'light)
 #+END_SRC
 ** Themes
 #+BEGIN_SRC emacs-lisp
@@ -292,6 +295,11 @@ evaluating this file.
     :height 180
     :weight 'normal
     :width 'normal)
+#+END_SRC
+** Language Specific Stuff
+*** JS
+#+BEGING_SRC emacs-lisp
+  (use-package rjsx-mode)
 #+END_SRC
 * Keybindings
 ** Leaders
@@ -381,12 +389,17 @@ null to keep it interesting and piss off the static typers?
     "k" '(with-editor-cancel :wk "cancel"))
 #+END_SRC
 ** Org
+   This is where i'm putting all my org bindings. TBD on how many I customize,
+   maybe i should just get used to C-c [fn:1]?
 #+BEGIN_SRC emacs-lisp
   (defvar org-global-map (make-sparse-keymap) "org global shortcuts")
   (general-define-key
     :keymaps 'org-global-map
     :wk-full-keys nil
-    "c" '(org-capture :wk "capture"))
+    "c" '(org-capture :wk "capture")
+    "l" '(org-store-link :wk "store link")
+    "a" '(org-agenda :wk "agenda")
+    "b" '(org-iswitchb :wk "switch buffers"))
   (global-leader "o" '(:keymap org-global-map :which-key "org"))
 
   (defvar org-local-map (make-sparse-keymap) "org local shortcuts")
@@ -414,8 +427,8 @@ null to keep it interesting and piss off the static typers?
     :definer 'minor-mode
     :states 'normal
     :keymaps 'org-capture-mode
-    "," '(org-capture-finish :wk "finish")
-    "c" '(org-capture-finish :wk "finish")
+    "," '(org-capture-finalize :wk "finish")
+    "c" '(org-capture-finalize :wk "finish")
     "w" '(org-capture-refile :wk "refile")
     "k" '(org-capture-kill :wk "kill"))
 #+END_SRC
@@ -443,7 +456,7 @@ null to keep it interesting and piss off the static typers?
     "c" '(multi-term :wk "create"))
   (local-leader
     :package 'multi-term
-    :major-modes 'term
+    :major-modes '(term t)
     :keymaps 'normal
     "" '(:keymap term-local-map :wk "term local"))
   
@@ -549,5 +562,10 @@ null to keep it interesting and piss off the static typers?
 ;  :init
 ;  (setq alert-default-style 'notifier))
 #+END_SRC
+
+* Footnotes
+
+[fn:1] I should.
+
 
    
