@@ -232,6 +232,10 @@ evaluating this file.
   (setq org-capture-templates
     '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
            "**** TODO %?\n")
+      ("P" "Work Implementation Plan" entry (file+olp "~/org/rover.org" "Implementation Plans")
+           "** %?\n*** Purpose\n\n*** Goals\n\n*** Overview\n\n*** Development Plan\n\n*** Testing and Deployment Plan\n\n*** Documentation Plan\n")
+      ("I" "Work Interview" entry (file+datetree "~/org/rover.org")
+           "**** TODO Interview %?\n***** Intros\n***** Code/Data Model\n***** Questions\n")
       ;("O" "Work One-pager" entry (file+olp "~/org/rover.org" "One-Pagers")
           ; "** %?\n*** What?\n*** Why?\n*** How?\n*** Open Questions")
      ))
@@ -274,19 +278,19 @@ evaluating this file.
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 #+END_SRC
-** Smart Mode Line
-#+BEGIN_SRC emacs-lisp
-  (use-package smart-mode-line)
-  (use-package smart-mode-line-powerline-theme)
-  (require 'smart-mode-line)
-  (setq sml/theme 'light)
-  (sml/setup)
-#+END_SRC
 ** Themes
 #+BEGIN_SRC emacs-lisp
   (use-package github-modern-theme)
   (load-theme 'github-modern t)
   ;(load-theme 'tango-dark t)
+#+END_SRC
+** Smart Mode Line
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-mode-line)
+  (require 'smart-mode-line)
+  (setq sml/no-confirm-load-theme t)
+  (setq sml/theme 'light)
+  (sml/setup)
 #+END_SRC
 ** Font
 #+BEGIN_SRC emacs-lisp
@@ -390,7 +394,7 @@ null to keep it interesting and piss off the static typers?
 #+END_SRC
 ** Org
    This is where i'm putting all my org bindings. TBD on how many I customize,
-   maybe i should just get used to C-c [fn:1]?
+   maybe i should just get used to C-c? [fn:1]
 #+BEGIN_SRC emacs-lisp
   (defvar org-global-map (make-sparse-keymap) "org global shortcuts")
   (general-define-key
@@ -564,8 +568,5 @@ null to keep it interesting and piss off the static typers?
 #+END_SRC
 
 * Footnotes
+[fn:1] I should. 
 
-[fn:1] I should.
-
-
-   
