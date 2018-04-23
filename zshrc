@@ -79,6 +79,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# Just a test
+export EMACS="*term*"
+
 export DOCKER_BETA=osxfs
 source $HOME/projects/web/profile
 # source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
