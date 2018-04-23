@@ -369,7 +369,8 @@ evaluating this file.
   (general-define-key
     :keymaps 'file-global-map
     :wk-full-keys nil
-    "f" '(find-file :wk "find file"))
+    "f" '(find-file :wk "find file")
+    "F" '(helm-projectile-find-file-dwim :wk "find file dwim"))
   (global-leader "f" '(:keymap file-global-map :wk "files"))
 #+END_SRC
 ** Directories
@@ -378,7 +379,7 @@ evaluating this file.
   (general-define-key
     :keymaps 'dirs-global-map
     :wk-full-keys nil
-    "d" '(dired :wk "dired"))
+    "d" '(dired-jump :wk "dired"))
   (global-leader "d" '(:keymap dirs-global-map :wk "dirs"))
 #+END_SRC
 ** Project
@@ -442,8 +443,14 @@ null to keep it interesting and piss off the static typers?
     :keymaps 'org-local-map
     :package 'org
     :wk-full-keys nil
+    "," '(org-ctrl-c-ctrl-c :wk "C-c C-c")
+    "/" '(org-sparse-tree :wk "sparse tree")
     "p" '(org-set-property :wk "set property")
-    "t" '(org-set-tags-command :wk "set tags"))
+    "t" '(org-set-tags-command :wk "set tags")
+    "s" '(org-schedule :wk "Schedule")
+    "d" '(org-deadline :wk "Deadline")
+    ">" '(outline-demote :wk "Outline Demote")
+    "<" '(outline-promote :wk "Outline Promote"))
   (local-leader
     :package 'org
     :major-modes '(org-mode t)
@@ -489,11 +496,11 @@ null to keep it interesting and piss off the static typers?
     "n" '(multi-term-next :wk "next")
     "p" '(multi-term-prev :wk "prev")
     "c" '(multi-term :wk "create"))
-  (local-leader
-    :package 'multi-term
-    :major-modes '(term t)
-    :keymaps 'normal
-    "" '(:keymap term-local-map :wk "term local"))
+  ;(local-leader
+    ;:package 'multi-term
+    ;:major-modes '(term t)
+    ;:keymaps 'normal
+    ;"" '(:keymap term-local-map :wk "term local"))
   
   ;(evil-leader/set-key "'" 'multi-term)
 

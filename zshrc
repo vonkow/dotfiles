@@ -78,21 +78,11 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 
-export DOCKER_BETA=1
+export DOCKER_BETA=osxfs
 source $HOME/projects/web/profile
 # source /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper_lazy.sh
 
-# Use ctrl-z to return to vim
-fancy-ctrl-z () {
-  if [[ $#BUFFER -eq 0 ]]; then
-    BUFFER="fg"
-    zle accept-line
-  else
-    zle push-input
-    zle clear-screen
-  fi
-}
-zle -N fancy-ctrl-z
-bindkey '^Z' fancy-ctrl-z
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
