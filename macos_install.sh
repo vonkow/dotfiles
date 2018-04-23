@@ -4,14 +4,17 @@
 
 # Homebrew
 # TODO if is osx only
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+#/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 # Oh My zsh
 # TODO use wget if not osx
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+#sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # Emacs
-brew install emacs --with-cocoa
+#brew install emacs --with-cocoa
+
+# AG
+brew install ag
 
 # Fonts
 ## Plex
