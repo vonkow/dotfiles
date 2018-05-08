@@ -536,7 +536,12 @@ null to keep it interesting and piss off the static typers?
   (general-define-key
     :keymaps 'lisp-global-map
     :wk-full-keys nil
-    "l" 'eval-last-sexp)
+    "b" '(eval-buffer :wk "eval buffer")
+    "e" '(eval-expression :wk "eval expression")
+    "f" '(eval-defun :wk "eval defun")
+    "l" 'eval-last-sexp
+    "r" '(eval-region :wk "eval region")
+    "s" '(ielm :wk "shell"))
   (global-leader "k" '(:keymap lisp-global-map :wk "lispy things"))
 #+END_SRC
 * Old, but interesting inner workings
