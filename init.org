@@ -28,8 +28,7 @@ evaluating this file.
    Use the shell's path, not stupid Mac OS path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell)
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize)
 #+END_SRC
 ** Custom is sillier
    No clutter from custom in =.emacs=
@@ -161,6 +160,14 @@ evaluating this file.
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
   (use-package nose)
 #+END_SRC
+**** JS
+***** Prettier
+#+BEGIN_SRC emacs-lisp
+  (use-package prettier-js)
+  (require 'prettier-js)
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode)
+#+END_SRC
 *** Modes
 **** Web Stuff
 #+BEGIN_SRC emacs-lisp
@@ -208,6 +215,7 @@ evaluating this file.
     (add-hook 'sh-mode-hook 'flycheck-mode)
     (add-hook 'rst-mode-hook 'flycheck-mode)
     (add-hook 'js-mode-hook 'flycheck-mode))
+  (require 'flycheck)
   ;; use local eslint from node_modules before global
   ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
   (defun my/use-eslint-from-node-modules ()
@@ -220,7 +228,13 @@ evaluating this file.
       (when (and eslint (file-executable-p eslint))
         (setq-local flycheck-javascript-eslint-executable eslint))))
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-  (require 'flycheck)
+
+  (setq-default flycheck-disabled-checkers
+  (append flycheck-disabled-checkers
+    '(javascript-jshint)))
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'javascript-eslint 'js-mode)
+  (flycheck-add-mode 'javascript-eslint 'jsx-mode)
 #+END_SRC
 **** TODO Finish adding stuff from http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 ** Org
