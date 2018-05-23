@@ -346,7 +346,7 @@ evaluating this file.
 #+END_SRC
 ** Language Specific Stuff
 *** JS
-#+BEGING_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package rjsx-mode)
   (use-package js2-mode)
 #+END_SRC
@@ -460,8 +460,9 @@ null to keep it interesting and piss off the static typers?
     "," '(org-ctrl-c-ctrl-c :wk "C-c C-c")
     "/" '(org-sparse-tree :wk "sparse tree")
     "p" '(org-set-property :wk "set property")
-    "t" '(org-set-tags-command :wk "set tags")
+    "r" '(org-priority :wk "set priority")
     "s" '(org-schedule :wk "Schedule")
+    "t" '(org-set-tags-command :wk "set tags")
     "d" '(org-deadline :wk "Deadline")
     ">" '(outline-demote :wk "Outline Demote")
     "<" '(outline-promote :wk "Outline Promote"))
