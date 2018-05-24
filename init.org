@@ -598,17 +598,11 @@ null to keep it interesting and piss off the static typers?
 ;  (setq slack-prefer-current-team t)
 ;  :config
 ;  (slack-register-team
-;    :name "roverdotcom"
+;    :name ""
 ;    :default t
-;    :client-id "3044291641.244028430790"
-;    :client-secret "cceebfee26330ce5c056d3d3b1d34c2d"
-;    :subscribed-channels '(
-;      dilla komondors komondors-web ops tech
-;      board-gaming catpeople rpg
-;      basenjis goldador ibizans maremmas newfies ridgebacks
-;      5th_floor_seattle craft-beer-kids gaming rover_pics roverdotcom
-;      android app-reviews data deploys dilla-cx dilla-wiz ios mobile-support product rover-oss tech-emergency updates-data-model updates-product
-;      yak-shaving)
+;    :client-id ""
+;    :client-secret ""
+;    :subscribed-channels '(yak-shaving)
 ;  )
 
   ;; (evil-define-key 'normal slack-info-mode-map
