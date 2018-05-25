@@ -1,8 +1,21 @@
 * Init and Monkeypatch
-** Preamble
+  There's a lot of little things to tweak before we start adding
+  features and defining bindings.
+** Preamble (aka =.emacs=)
    In order to have this cool org-ified init file, .emacs does a few
 things. This includes calling package-initialize and loading org before 
-evaluating this file.
+evaluating this file. 
+
+   We also follow symlinks by default so that I can throw this file
+(and =.emacs=) in =~/dotfiles= (under VC) and link to it.
+
+It looks something like this:
+#+BEGIN_SRC emacs-lisp
+; (package-initialize)
+; (setq vc-follow-symlinks t)
+; (require 'org)
+; (org-babel-load-file (expand-file-name "~/init.org"))
+#+END_SRC
 ** All about Packages
    Gotta configure how we get packages before getting them
 *** Other repos
@@ -36,19 +49,13 @@ evaluating this file.
   (setq custom-file "~/init-custom.el")
   (load-file custom-file)
 #+END_SRC
-** Menus, scrollbars, toolbars, and splash screens
-   Be rid of them until you find useful versions
-#+BEGIN_SRC emacs-lisp
-  (setq inhibit-splash-screen t)
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (toggle-scroll-bar -1)
-#+END_SRC
 ** Death to tabs
+   Self explanatory.
 #+BEGIN_SRC emacs-lisp
   (setq-default indent-tabs-mode nil)
 #+END_SRC
 ** And to noises
+   Doubly so.
 #+BEGIN_SRC emacs-lisp
  (setq ring-bell-function 'ignore)
 #+END_SRC
@@ -64,10 +71,27 @@ evaluating this file.
   (when (display-graphic-p)
     (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+END_SRC
+** Menus, scrollbars, toolbars 
+   Be rid of them until you find useful versions.
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (toggle-scroll-bar -1)
+#+END_SRC
+** Splash Screen / Starting Buffer
+   Start here in =init.org= so that you can always improve things.
+   This will encourage you to be better every day, or at least 
+   maybe you'll remember to add shortcuts to your bindings as you
+   find them.
+   Maybe someday open "important" org stuff too, or is that too much?
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-splash-screen t)
+  (setq initial-buffer-choice "~/init.org")
+#+END_SRC
 * Packages and config
-  Emacs has good functions, but let's add gooderer ones
+  Emacs has good functions, but let's add gooderer ones.
 ** Evil
-    Vi til I die
+    vi 'til I die
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :demand
@@ -75,48 +99,45 @@ evaluating this file.
   (require 'evil)
 #+END_SRC
 *** Some Extra Evil Packages
-    Misery loves company
+    Misery loves company.
 **** We have you surrounded
 #+BEGIN_SRC emacs-lisp
   (use-package evil-surround)
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 #+END_SRC
+**** TODO Add more evil packages?
 ** General.el
-    It claims to be a more evil-leader
+    The Evilest Leader?
+    This makes all the keybindings be more betterer.
 #+BEGIN_SRC emacs-lisp
-  (use-package general
-    :demand)
+  (use-package general :demand)
   (require 'general)
 #+END_SRC
-** Navigation
-*** Which key?
-    So we can see what's bound to what
+** Which key?
+    So we can see what's bound to what.
 #+BEGIN_SRC emacs-lisp
   (use-package which-key :demand)
   (which-key-mode)
 #+END_SRC
-*** Helm
-    Because Ivy was a little *too* minimalistic
+** Helm
+   It gets around.
 #+BEGIN_SRC emacs-lisp
-  (use-package helm-core
-    :ensure t)
+(use-package helm-core)
 
-  (use-package helm
-    :ensure t
-    :config (progn
-              (setq helm-buffers-fuzzy-matching t)
-              (helm-mode 1)))
+(use-package helm
+  :config (progn
+            (setq helm-buffers-fuzzy-matching t)
+            (helm-mode 1)))
 
-  (use-package helm-descbinds
-    :ensure t)
-  ; TODO helm-swoop if it looks coole
+(use-package helm-descbinds)
 
-  (use-package helm-ag
-    :ensure helm-ag)
+; TODO helm-swoop if it looks coole
+
+(use-package helm-ag)
 #+END_SRC
-*** Projectile
-    Manage yo shit
+** Projectile
+   Rob Rosado would remind you to manage your shit.
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
@@ -127,75 +148,70 @@ evaluating this file.
     (setq projectile-remember-window-configs t)
     (setq projectile-completion-system 'ivy))
 
-  (use-package helm-projectile
-    :ensure t
-    ;:general 
-    ;(project-stuff-map
-      ;:wk-full-keys nil
-      ;"f" '(helm-projectile-find-file-dwim :wk "find file")
-      ;"s" '(helm-projectile-ag :wk "search")))
-    )
+  (use-package helm-projectile)
+  (require 'helm-projectile)
+  (helm-projectile-on)
 #+END_SRC
-*** Counsel
-    Clearly, it does something.
+** Dired
+   It's better than ls+vim<TAB><TAB>, but still needs tweaking.
+   Hide file details by default.
 #+BEGIN_SRC emacs-lisp
-(use-package counsel
-  :ensure t
-  ;:bind
-  ;("M-x" . counsel-M-x)
-  ;("C-z f" . counsel-describe-function)
-  ;("C-z v" . counsel-describe-variable)
-  ;("C-c k" . counsel-ag)
-  )
+  (add-hook 'dired-mode-hook
+    (lambda ()
+      (dired-hide-details-mode)))
 #+END_SRC
-**** TODO learn why we care about this package
 ** Ag
-    The silver surfer will probably be replaced by faster search someday.
-    Heavy is the head that wears the crown.
+   The silver surfer will probably be replaced by faster search someday.
+   Heavy is the head that wears the crown.
 #+BEGIN_SRC emacs-lisp
   (use-package ag
-    :ensure t
     :config
     (add-hook 'ag-mode-hook 'toggle-truncate-lines)
     (setq ag-highlight-search t)
     (setq ag-reuse-buffers 't))
 #+END_SRC
-** Completion and Checking
-   Flycheck seemed good, let's also try company
-*** TODO Figure out if both work together or what
-*** Languages
-**** Python
-     Anaconda maybe?
+** Language Specific Stuff
+*** "The Web"
+    htmlcssjs will never truly escape each other.
 #+BEGIN_SRC emacs-lisp
-  (use-package anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
-  (use-package nose)
+  (use-package web-mode)
+  (use-package mmm-mode)
 #+END_SRC
-**** JS
-***** Prettier
+*** JS
+    Make JS ECMA and more Reactionary, to boot.
+#+BEGIN_SRC emacs-lisp
+  (use-package rjsx-mode)
+  (use-package js2-mode)
+#+END_SRC
+**** Prettier
+     The prettierest one could use some scss help, but is otherwise
+     cool, I guess.
 #+BEGIN_SRC emacs-lisp
   (use-package prettier-js)
   (require 'prettier-js)
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
 #+END_SRC
-*** Modes
-**** Web Stuff
+***** TODO Add to scss?
+*** Python
+    Anaconda maybe?
 #+BEGIN_SRC emacs-lisp
-  (use-package web-mode)
-  (use-package mmm-mode)
+  (use-package anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  (use-package nose)
 #+END_SRC
+** Completion and Checking
+   Flycheck seemed good, let's also try company
+*** TODO Figure out if both work together or what
 *** Company
+    It COMPletes ANY, uhh, any what?
 #+BEGIN_SRC emacs-lisp
-  (use-package company-go
-    :ensure t)
+  (use-package company-go)
 
-  (use-package company-jedi
-    :ensure t)
+  (use-package company-jedi)
 
   (use-package company
-    :ensure t
     :diminish company-mode
     :init
     (add-hook 'after-init-hook 'global-company-mode)
@@ -210,10 +226,10 @@ evaluating this file.
   (require 'company)
 #+END_SRC
 *** Flycheck
+    It, uhh, checks things on the fly? 
+    (This name would have been really cool in the 90s)
 #+BEGIN_SRC emacs-lisp
-
   (use-package flycheck
-    :ensure t
     :config
     (setq flycheck-check-syntax-automatically '(mode-enabled save))
     (setq flycheck-disabled-checkers
@@ -250,11 +266,11 @@ evaluating this file.
 #+END_SRC
 **** TODO Finish adding stuff from http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 ** Org
-   Installed by bootstrap, hence the cool org-ified init file.
+   Installed by =.emacs=, hence the cool org-ified init file.
 *** Make Org Evil
+    Obviously.
 #+BEGIN_SRC emacs-lisp
   (use-package evil-org
-    :ensure t
     :after org
     :config
     (add-hook 'org-mode-hook 'evil-org-mode)
@@ -266,6 +282,7 @@ evaluating this file.
 #+END_SRC
 *** Babel
     This should at least sorta make init.org fun to edit
+**** TODO Fix this and make it work how you want it to
 #+BEGIN_SRC emacs-lisp
   (setq org-confirm-babel-evaluate #'(lambda (lang body)
     (not (or (string= lang "emacs-lisp")
@@ -277,11 +294,12 @@ evaluating this file.
       (python . t)
       (ditaa . t)))
 #+END_SRC
+**** ☛ TODO Make paredit work in babel'd files
 *** Better Bullets
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
-    :init (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
+    :init (setq org-bullets-bullet-list '("*" "◉" "◎" "○" "◇")) ; "►"? 
     :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
@@ -290,12 +308,14 @@ evaluating this file.
      https://zhangda.wordpress.com/2016/02/15/configurations-for-beautifying-emacs-org-mode/
      Might be a good resource for fixing UTF-8 stuff **AND** making org nicer looking
 *** Sequencing 
+**** TODO Fix or delete this
 #+BEGIN_SRC emacs-lisp
   ;(setq org-todo-keywords '((sequence "☛ TODO(t)" "|" "✔ DONE(d)")
   ;(sequence "⚑ WAITING(w)" "|")
   ;(sequence "|" "✘ CANCELED(c)")))
 #+END_SRC
 *** Capture Templates
+    Mostly work stuff right now. Change that.
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
     '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
@@ -309,12 +329,12 @@ evaluating this file.
      ))
 #+END_SRC
 *** Agenda
+    Maybe just maybe add to the adgenda?
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files '("~/org/" "~/dotfiles/init.org"))
 #+END_SRC
-*** ☛ TODO Make paredit work in babel'd files
 ** Multi-term
-   Yay for shell
+   Yay for shell, make it of the z variety
 #+BEGIN_SRC emacs-lisp
   (use-package multi-term)
   (setq multi-term-program "/bin/zsh")
@@ -323,7 +343,7 @@ evaluating this file.
     Is awesome, use it.
 #+BEGIN_SRC emacs-lisp
   (use-package magit)
-  (use-package evil-magit :ensure t)
+  (use-package evil-magit)
   (require 'evil-magit)
 #+END_SRC
 **** TODO Add git timemachine 
@@ -333,7 +353,11 @@ evaluating this file.
   (require 'perspective)
   (persp-mode)
 #+END_SRC
+*** TODO Maybe install perspective-projectile?
+    Esp if it plays nice with helm.
+    https://github.com/bbatsov/persp-projectile
 ** Paredit and lisp thisgs
+   This needs some love.
 #+BEGIN_SRC emacs-lisp
   (use-package paredit)
   (require 'paredit)
@@ -346,13 +370,17 @@ evaluating this file.
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 #+END_SRC
+*** TODO Love the above
 ** Themes
+   It doesn't matter cuz it's black and white.
+   Well, grey.
+   Or, gray?
 #+BEGIN_SRC emacs-lisp
   (use-package github-modern-theme)
   (load-theme 'github-modern t)
-  ;(load-theme 'tango-dark t)
 #+END_SRC
 ** Smart Mode Line
+   It could look nicer.
 #+BEGIN_SRC emacs-lisp
   (use-package smart-mode-line)
   (require 'smart-mode-line)
@@ -360,7 +388,9 @@ evaluating this file.
   (setq sml/theme 'light)
   (sml/setup)
 #+END_SRC
+*** TODO Make it look nicer
 ** Font
+   A hard choice.
 #+BEGIN_SRC emacs-lisp
   (if (find-font (font-spec :name "IBM Plex Mono"))
       (set-face-attribute 'default nil
@@ -374,14 +404,9 @@ evaluating this file.
         :weight 'normal
         :width 'normal))
 #+END_SRC
-** Language Specific Stuff
-*** JS
-#+BEGIN_SRC emacs-lisp
-  (use-package rjsx-mode)
-  (use-package js2-mode)
-#+END_SRC
 * Keybindings
 ** Leaders
+   Precipitate Followers, Global and Local.
 #+BEGIN_SRC emacs-lisp
   (general-create-definer global-leader :keymaps 'normal :prefix "SPC")
   (global-leader
@@ -392,11 +417,12 @@ evaluating this file.
   (local-leader "" '(nil :wk "local leader"))
 #+END_SRC
 ** Perspective
+   It's all how you look at it.
 #+BEGIN_SRC emacs-lisp
-  (global-leader "l" '(:keymap perspective-map :wk "buffers"))
+  (global-leader "l" '(:keymap perspective-map :wk "perspective"))
 #+END_SRC
 ** Buffers
-   Everything's a buffer, man
+   Everything's a buffer, man.
 #+BEGIN_SRC emacs-lisp
   (defvar buffer-global-map (make-sparse-keymap) "buffer shortcuts")
   (general-define-key
@@ -408,6 +434,7 @@ evaluating this file.
   (global-leader "b" '(:keymap buffer-global-map :wk "buffers"))
 #+END_SRC
 ** Files
+   Buffers that think they know where they are.
 #+BEGIN_SRC emacs-lisp
   (defvar file-global-map (make-sparse-keymap) "file shortcuts")
   (general-define-key
@@ -418,6 +445,7 @@ evaluating this file.
   (global-leader "f" '(:keymap file-global-map :wk "files"))
 #+END_SRC
 ** Directories
+   Here and There.
 #+BEGIN_SRC emacs-lisp
   (defvar dirs-global-map (make-sparse-keymap) "dirs shortcuts")
   (general-define-key
@@ -427,19 +455,25 @@ evaluating this file.
   (global-leader "d" '(:keymap dirs-global-map :wk "dirs"))
 #+END_SRC
 ** Project
+   Everything you need to know about one (big) thing.
 #+BEGIN_SRC emacs-lisp
   (defvar project-global-map (make-sparse-keymap) "project shortcuts")
   (general-define-key
     :keymaps 'project-global-map
     :wk-full-keys nil
+    "f" '(helm-projectile-find-dir :wk "find dir")
     "f" '(helm-projectile-find-file-dwim :wk "find file")
-    "s" '(helm-projectile-ag :wk "search"))
+    "s" '(helm-projectile-ag :wk "search")
+    "w" '(helm-projectile-switch-project :wk "switch project"))
   (global-leader "p" '(:keymap project-global-map :wk "project"))
 #+END_SRC
 ** Procs
-   Processes are, like, buffers in action or maybe they're files come to 
-life and maybe life is just a stream of ones, zeros, and the occasional 
-null to keep it interesting and piss off the static typers?
+   Processes are, like, buffers in action. Or, maybe they're files
+   come to life and maybe life is just a stream of ones, zeros, and the
+   occasional null to keep it interesting and piss off the static typers?
+
+   Or maybe, who cares? You rarely access this keymap/function-group and
+   it's probably just a holdover from earlier days.
 #+BEGIN_SRC emacs-lisp
   (defvar process-global-map (make-sparse-keymap) "process shortcuts")
   (general-define-key
@@ -449,6 +483,7 @@ null to keep it interesting and piss off the static typers?
   (global-leader "P" '(:keymap process-global-map :wk "process"))
 #+END_SRC
 ** Git
+   Magit and friends!
 #+BEGIN_SRC emacs-lisp
   (defvar git-global-map (make-sparse-keymap) "Git Shortcuts")
   (general-define-key
@@ -471,6 +506,8 @@ null to keep it interesting and piss off the static typers?
 ** Org
    This is where i'm putting all my org bindings. TBD on how many I customize,
    maybe i should just get used to C-c? [fn:1]
+*** Global org commands
+    Like capture and agenda anywhere
 #+BEGIN_SRC emacs-lisp
   (defvar org-global-map (make-sparse-keymap) "org global shortcuts")
   (general-define-key
@@ -481,7 +518,10 @@ null to keep it interesting and piss off the static typers?
     "a" '(org-agenda :wk "agenda")
     "b" '(org-iswitchb :wk "switch buffers"))
   (global-leader "o" '(:keymap org-global-map :which-key "org"))
-
+#+END_SRC
+*** Local org commands
+    Shortcuts from inside the belly of the beast.
+#+BEGIN_SRC emacs-lisp
   (defvar org-local-map (make-sparse-keymap) "org local shortcuts")
   (general-define-key
     :keymaps 'org-local-map
@@ -501,7 +541,10 @@ null to keep it interesting and piss off the static typers?
     :major-modes '(org-mode t)
     :keymaps 'normal
     "" '(:keymap org-local-map :wk "org local"))
-
+#+END_SRC
+*** Org capture shortcuts
+    Make org-capture painless.
+#+BEGIN_SRC emacs-lisp
   (general-define-key
     :package 'org
     :major-modes 'org-mode
@@ -520,6 +563,7 @@ null to keep it interesting and piss off the static typers?
     "k" '(org-capture-kill :wk "kill"))
 #+END_SRC
 ** Text
+   Just wrap the paragraphs for now, make it much better as needed.
 #+BEGIN_SRC emacs-lisp
   (defvar text-global-map (make-sparse-keymap) "Text Shortcuts")
   (general-define-key
@@ -529,7 +573,8 @@ null to keep it interesting and piss off the static typers?
   (global-leader "x" '(:keymap text-global-map :wk "text"))
 #+END_SRC
 ** Term
-*** TODO Make multi-term-next/prev work (and create)
+   I couldn't get local leader to work for ~p~ and ~n~, so I made it
+   all global for now.
 #+BEGIN_SRC emacs-lisp
   (defvar term-local-map (make-sparse-keymap) "term local shortcuts")
   (general-define-key
@@ -541,7 +586,9 @@ null to keep it interesting and piss off the static typers?
     "c" '(multi-term :wk "create"))
   (global-leader "t" '(:keymap term-local-map :wk "term"))
 #+END_SRC
+*** TODO Make multi-term-next/prev work locally (and create)
 ** Help
+   I need somebody.
 #+BEGIN_SRC emacs-lisp
   (defvar help-global-map (make-sparse-keymap) "help shortcuts")
   (general-define-key
@@ -550,18 +597,8 @@ null to keep it interesting and piss off the static typers?
     "h" '(help-command :wk "help"))
   (global-leader "h" '(:keymap help-global-map :wk "halp"))
 #+END_SRC
-** Search
-   If you can't find it, does it really exist?
-#+BEGIN_SRC emacs-lisp
-  (defvar search-global-map (make-sparse-keymap) "search")
-  (general-define-key
-    :keymaps 'search-global-map
-    :wk-full-keys nil
-    "a" '(counsel-ag :wk "ag"))
-  (global-leader "s" '(:keymap search-global-map :wk "search"))
-#+END_SRC
 ** Lispy Things
-*** TODO Probably move these somewhere else someday
+   Shh...
 #+BEGIN_SRC emacs-lisp
   (defvar lisp-global-map (make-sparse-keymap) "lisp")
   (general-define-key
@@ -575,14 +612,8 @@ null to keep it interesting and piss off the static typers?
     "s" '(ielm :wk "shell"))
   (global-leader "k" '(:keymap lisp-global-map :wk "lispy things"))
 #+END_SRC
+*** TODO Probably move these somewhere else someday
 * Old, but interesting inner workings
-** +DIY Leader+
-   Keep it simple, stupid
-#+BEGIN_SRC emacs-lisp
-  ;(defvar base-leader-map (make-sparse-keymap)
-    ;"Base leader keymap")
-  ;(define-key evil-normal-state-map (kbd "SPC") base-leader-map)
-#+END_SRC
 ** +Slack maybe?+
 #+BEGIN_SRC emacs-lisp
 ;(el-get-bundle slack)
@@ -637,5 +668,5 @@ null to keep it interesting and piss off the static typers?
 #+END_SRC
 
 * Footnotes
-[fn:1] I should. 
+[fn:1] I should. Or maybe not.
 
