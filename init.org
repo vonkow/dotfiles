@@ -429,6 +429,7 @@ It looks something like this:
     :keymaps 'buffer-global-map
     :wk-full-keys nil
     "b" '(buffer-menu :wk "buffers")
+    "s" '(switch-to-buffer :wk "switch")
     "n" '(next-buffer :wk "next")
     "p" '(previous-buffer :wk "prev"))
   (global-leader "b" '(:keymap buffer-global-map :wk "buffers"))
@@ -535,7 +536,8 @@ It looks something like this:
     "t" '(org-set-tags-command :wk "set tags")
     "d" '(org-deadline :wk "Deadline")
     ">" '(outline-demote :wk "Outline Demote")
-    "<" '(outline-promote :wk "Outline Promote"))
+    "<" '(outline-promote :wk "Outline Promote")
+    "e" '(org-export-dispatch :wk "Export"))
   (local-leader
     :package 'org
     :major-modes '(org-mode t)
