@@ -395,12 +395,12 @@ It looks something like this:
   (if (find-font (font-spec :name "IBM Plex Mono"))
       (set-face-attribute 'default nil
         :family "IBM Plex Mono"
-        :height 180
+        :height 160
         :weight 'normal
         :width 'normal)
       (set-face-attribute 'default nil
         :family "Source Code Pro"
-        :height 180
+        :height 160
         :weight 'normal
         :width 'normal))
 #+END_SRC

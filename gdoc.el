@@ -19,8 +19,7 @@
   text)
 
 (org-export-define-backend 'gdoc
-  '(
-    (paragraph . org-gdoc-paragraph)
+  '((paragraph . org-gdoc-paragraph)
     (headline . org-gdoc-headline)
     (bold . org-gdoc-bold)
     (plain-text . org-gdoc-plain-text))
