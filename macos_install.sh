@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TODO update this a bunch
+# TODO update this a bunch and make betterer
 
 # Homebrew
 # TODO if is osx only

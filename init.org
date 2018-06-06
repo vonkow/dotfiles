@@ -120,6 +120,18 @@ It looks something like this:
   (use-package which-key :demand)
   (which-key-mode)
 #+END_SRC
+** Smooth Scrolling
+   We could do it ourselves with `scroll-step 1 scroll-conservatively
+   10000` but fuck it, let's use a package because even if it's bloat
+   they probably thought of how to handle some edge cases or hopefully
+   made the feature nicer.
+#+BEGIN_SRC emacs-lisp
+  (use-package smooth-scrolling
+    :config (progn
+              (smooth-scrolling-mode 1)
+              (setq smooth-scroll-margin 5)))
+  (require 'smooth-scrolling)
+#+END_SRC
 ** Helm
    It gets around.
 #+BEGIN_SRC emacs-lisp
@@ -420,6 +432,10 @@ It looks something like this:
    It's all how you look at it.
 #+BEGIN_SRC emacs-lisp
   (global-leader "l" '(:keymap perspective-map :wk "perspective"))
+  (general-define-key
+    :keymaps 'perspective-map
+    :wk-full-keys nil
+    "l" '(persp-switch-quick :wk "quick switch"))
 #+END_SRC
 ** Buffers
    Everything's a buffer, man.
@@ -430,6 +446,7 @@ It looks something like this:
     :wk-full-keys nil
     "b" '(buffer-menu :wk "buffers")
     "s" '(switch-to-buffer :wk "switch")
+    "k" '(kill-buffer :wk "kill buffer")
     "n" '(next-buffer :wk "next")
     "p" '(previous-buffer :wk "prev"))
   (global-leader "b" '(:keymap buffer-global-map :wk "buffers"))
@@ -530,6 +547,8 @@ It looks something like this:
     :wk-full-keys nil
     "," '(org-ctrl-c-ctrl-c :wk "C-c C-c")
     "/" '(org-sparse-tree :wk "sparse tree")
+    "f" '(helm-org-in-buffer-headings :wk "find heading") ; gonna do an
+    "g" '(org-mark-ring-goto :wk "goto back") ; experiment here
     "p" '(org-set-property :wk "set property")
     "r" '(org-priority :wk "set priority")
     "s" '(org-schedule :wk "Schedule")
