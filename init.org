@@ -205,6 +205,9 @@ It looks something like this:
   (require 'rjsx-mode)
   (require 'js2-mode)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
+  (add-to-list 'interpreter-mode-alist '("node" . js2-jsx-mode))
 #+END_SRC
 **** Prettier
      The prettierest one could use some scss help, but is otherwise
