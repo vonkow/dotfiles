@@ -10,7 +10,7 @@ CASE_SENSITIVE="true"
 
 plugins=(git ssh-agent)
 
-export PATH="/Users/caz_downing-bryant/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:~/bin"
+export PATH="/Users/caz_downing-bryant/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:~/bin:/Users/cazdowning-bryant/Library/Python/2.7/bin"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -25,4 +25,10 @@ export NVM_DIR="$HOME/.nvm"
 
 # @work
 export DOCKER_BETA=osxfs
+export ROVER_AWS_FEDERATION_ROLE="arn:aws:iam::401027316804:role/FederatedProdSupportDeveloper"
+#export ROVER_AWS_FEDERATION_ROLE="arn:aws:iam::401027316804:role/FederatedDeveloper"
+ulimit -n 524288
+
 source $HOME/projects/web/profile
+source $HOME/.env
+

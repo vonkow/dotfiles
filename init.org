@@ -126,12 +126,16 @@ It looks something like this:
    they probably thought of how to handle some edge cases or hopefully
    made the feature nicer.
 #+BEGIN_SRC emacs-lisp
-  (use-package smooth-scrolling
-    :config (progn
-              (smooth-scrolling-mode 1)
-              (setq smooth-scroll-margin 5)))
-  (require 'smooth-scrolling)
+  (setq
+    scroll-step 1
+    scroll-conservatively 10000)
+  ;(use-package smooth-scrolling
+    ;:demand
+    ;:config (progn
+              ;(smooth-scrolling-mode 1)
+              ;(setq smooth-scroll-margin 5)))
 #+END_SRC
+*** TODO Make C_f and C_b from evil work nice with this
 ** Helm
    It gets around.
 #+BEGIN_SRC emacs-lisp
@@ -188,12 +192,19 @@ It looks something like this:
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode)
   (use-package mmm-mode)
+  (require 'web-mode)
+  (require 'mmm-mode)
 #+END_SRC
 *** JS
     Make JS ECMA and more Reactionary, to boot.
 #+BEGIN_SRC emacs-lisp
   (use-package rjsx-mode)
-  (use-package js2-mode)
+  (use-package js2-mode
+    :config
+    (setq js2-basic-offset 2))
+  (require 'rjsx-mode)
+  (require 'js2-mode)
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 #+END_SRC
 **** Prettier
      The prettierest one could use some scss help, but is otherwise
@@ -201,6 +212,7 @@ It looks something like this:
 #+BEGIN_SRC emacs-lisp
   (use-package prettier-js)
   (require 'prettier-js)
+  (add-hook 'js-mode-hook 'prettier-js-mode)
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
 #+END_SRC
@@ -212,6 +224,8 @@ It looks something like this:
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
   (use-package nose)
+  (use-package elpy)
+  (elpy-enable)
 #+END_SRC
 ** Completion and Checking
    Flycheck seemed good, let's also try company
@@ -244,6 +258,7 @@ It looks something like this:
   (use-package flycheck
     :config
     (setq flycheck-check-syntax-automatically '(mode-enabled save))
+    (setq flycheck-python-flake8-executable "flake8")
     (setq flycheck-disabled-checkers
       (append flycheck-disabled-checkers
         '(javascript-jshint)))
@@ -254,6 +269,9 @@ It looks something like this:
     (add-hook 'go-mode-hook 'flycheck-mode)
     (add-hook 'sh-mode-hook 'flycheck-mode)
     (add-hook 'rst-mode-hook 'flycheck-mode)
+    (add-hook 'js2-mode-hook 'flycheck-mode)
+    (add-hook 'web-mode-hook 'flycheck-mode)
+    (add-hook 'mmm-mode-hook 'flycheck-mode)
     (add-hook 'js-mode-hook 'flycheck-mode))
   (require 'flycheck)
   ;; use local eslint from node_modules before global
@@ -479,8 +497,8 @@ It looks something like this:
   (general-define-key
     :keymaps 'project-global-map
     :wk-full-keys nil
-    "f" '(helm-projectile-find-dir :wk "find dir")
-    "f" '(helm-projectile-find-file-dwim :wk "find file")
+    "d" '(helm-projectile-find-dir :wk "find dir")
+    "f" '(projectile-find-file :wk "find file")
     "s" '(helm-projectile-ag :wk "search")
     "w" '(helm-projectile-switch-project :wk "switch project"))
   (global-leader "p" '(:keymap project-global-map :wk "project"))
