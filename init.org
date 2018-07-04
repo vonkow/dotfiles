@@ -230,6 +230,14 @@ It looks something like this:
   (use-package elpy)
   (elpy-enable)
 #+END_SRC
+*** Blacken
+    Any Colour You Like
+**** TODO TEMP AS HELL (make blackest available on melpa)
+#+BEGIN_SRC emacs-lisp
+  ;(use-package blackest)
+  (package-install-file "~/dotfiles/blackest.el")
+  (add-hook 'python-mode-hook 'blackest-mode)
+#+END_SRC
 ** Completion and Checking
    Flycheck seemed good, let's also try company
 *** TODO Figure out if both work together or what
