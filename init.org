@@ -235,8 +235,8 @@ It looks something like this:
 **** TODO TEMP AS HELL (make blackest available on melpa)
 #+BEGIN_SRC emacs-lisp
   ;(use-package blackest)
-  (package-install-file "~/dotfiles/blackest.el")
-  (add-hook 'python-mode-hook 'blackest-mode)
+  ;(package-install-file "~/dotfiles/blackest.el")
+  ;(add-hook 'python-mode-hook 'blackest-mode)
 #+END_SRC
 ** Completion and Checking
    Flycheck seemed good, let's also try company
@@ -308,6 +308,11 @@ It looks something like this:
 **** TODO Finish adding stuff from http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 ** Org
    Installed by =.emacs=, hence the cool org-ified init file.
+*** Basic Config
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done 'note)
+  (setq org-archive-location "%s_archive::datetree/")
+#+END_SRC
 *** Make Org Evil
     Obviously.
 #+BEGIN_SRC emacs-lisp
@@ -580,9 +585,10 @@ It looks something like this:
     "g" '(org-mark-ring-goto :wk "goto back") ; experiment here
     "p" '(org-set-property :wk "set property")
     "r" '(org-priority :wk "set priority")
-    "s" '(org-schedule :wk "Schedule")
     "t" '(org-set-tags-command :wk "set tags")
     "d" '(org-deadline :wk "Deadline")
+    "s" '(org-archive-subtree :wk "Archive Subtree")
+    "z" '(org-schedule :wk "Schedule")
     ">" '(outline-demote :wk "Outline Demote")
     "<" '(outline-promote :wk "Outline Promote")
     "e" '(org-export-dispatch :wk "Export"))
