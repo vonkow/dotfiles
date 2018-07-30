@@ -366,6 +366,12 @@ It looks something like this:
   (setq org-capture-templates
     '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
            "**** TODO %?\n")
+      ("N" "TODO Now" entry (file+olp "~/org/rover.org" "Tasks" "Now")
+           "*** TODO %?\n")
+      ("S" "TODO Soon" entry (file+olp "~/org/rover.org" "Tasks" "Soon")
+           "*** TODO %?\n")
+      ("L" "TODO Later" entry (file+olp "~/org/rover.org" "Tasks" "Later")
+           "*** TODO %?\n")
       ("P" "Work Implementation Plan" entry (file+olp "~/org/rover.org" "Implementation Plans")
            "** %?\n*** Purpose\n\n*** Goals\n\n*** Overview\n\n*** Development Plan\n\n*** Testing and Deployment Plan\n\n*** Documentation Plan\n")
       ("I" "Work Interview" entry (file+datetree "~/org/rover.org")
