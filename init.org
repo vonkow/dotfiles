@@ -145,7 +145,9 @@ It looks something like this:
   :config (progn
             (setq helm-buffers-fuzzy-matching t)
             (helm-mode 1)))
-
+;(define-key helm-map (kbd "TAB") #'helm-execute-persistent-action)
+;(define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
+;(define-key helm-map (kbd "C-z") #'helm-select-action)
 (use-package helm-descbinds)
 
 ; TODO helm-swoop if it looks coole
@@ -202,12 +204,26 @@ It looks something like this:
   (use-package js2-mode
     :config
     (setq js2-basic-offset 2))
+  ;(use-package flow-minor-mode)
+  ;(require 'flow-minor-mode)
   (require 'rjsx-mode)
   (require 'js2-mode)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
   (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
   (add-to-list 'interpreter-mode-alist '("node" . js2-jsx-mode))
+  ;(add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
+  ;(add-hook 'flow-jsx-mode-hook 'flow-minor-enable-automatically)
+#+END_SRC
+**** Flow
+     Is dumb and won't install from melpa.
+     clone it into ~/.emacs.d and run the following if you want it.
+     https://github.com/flowtype/flow-for-emacs
+     https://github.com/rudolfolah/emacs-flow-jsx
+#+BEGIN_SRC emacs-lisp
+  ;(load-file "~/.emacs.d/flow-for-emacs/flow.el")
+  ;(load-file "~/.emacs.d/emacs-flow-jsx/emacs-flow-jsx-mode.el")
+  ;(add-to-list 'auto-mode-alist '("\\.js\\'" . flow-jsx-mode))
 #+END_SRC
 **** Prettier
      The prettierest one could use some scss help, but is otherwise
@@ -230,9 +246,9 @@ It looks something like this:
   (use-package elpy)
   (elpy-enable)
 #+END_SRC
-*** Blacken
-    Any Colour You Like
-**** TODO TEMP AS HELL (make blackest available on melpa)
+**** Blacken
+     Any Colour You Like
+***** TODO TEMP AS HELL (make blackest available on melpa)
 #+BEGIN_SRC emacs-lisp
   ;(use-package blackest)
   ;(package-install-file "~/dotfiles/blackest.el")
@@ -248,6 +264,7 @@ It looks something like this:
 
   (use-package company-jedi)
 
+  (use-package company-flow)
   (use-package company
     :diminish company-mode
     :init
@@ -258,9 +275,12 @@ It looks something like this:
     (defun my/python-mode-hook ()
       (add-to-list 'company-backends 'company-jedi))
     (add-hook 'python-mode-hook 'my/python-mode-hook)
-    (add-to-list 'company-backends 'company-go)
+    ;(add-to-list 'company-backends 'company-go)
+    (add-to-list 'company-backends 'company-flow)
     (setq company-dabbrev-downcase nil))
+
   (require 'company)
+
 #+END_SRC
 *** Flycheck
     It, uhh, checks things on the fly? 
@@ -298,19 +318,28 @@ It looks something like this:
         (setq-local flycheck-javascript-eslint-executable eslint))))
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
-  (setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(javascript-jshint)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js-mode)
   (flycheck-add-mode 'javascript-eslint 'jsx-mode)
+  (use-package flycheck-flow)
+  (with-eval-after-load 'flycheck
+    ;(flycheck-add-mode 'javascript-flow 'flow-minor-mode)
+    (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+    ;(flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
+    )
 #+END_SRC
 **** TODO Finish adding stuff from http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
+** Slime
+#+BEGIN_SRC emacs-lisp
+  (use-package slime)
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (setq slime-contribs '(slime-fancy))
+#+END_SRC
 ** Org
    Installed by =.emacs=, hence the cool org-ified init file.
 *** Basic Config
 #+BEGIN_SRC emacs-lisp
-  (setq org-log-done 'note)
+  ;; (setq org-log-done nil) ;; or 'time or 'note
   (setq org-archive-location "%s_archive::datetree/")
 #+END_SRC
 *** Make Org Evil
@@ -364,13 +393,22 @@ It looks something like this:
     Mostly work stuff right now. Change that.
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
-    '(("T" "Work TODO" entry (file+datetree "~/org/rover.org")
+    '(
+      ("t" "TODO" entry (file "~/org/todos.org")
+           "* TODO %?\n")
+      ("n" "TODO Now (self)" entry (file+olp "~/org/self.org" "Tasks" "Now")
+           "*** TODO %?\n")
+      ("s" "TODO Soon (self)" entry (file+olp "~/org/self.org" "Tasks" "Soon")
+           "*** TODO %?\n")
+      ("l" "TODO Later (self)" entry (file+olp "~/org/self.org" "Tasks" "Later")
+           "*** TODO %?\n")
+      ("T" "Work TODO" entry (file+datetree "~/org/rover.org")
            "**** TODO %?\n")
-      ("N" "TODO Now" entry (file+olp "~/org/rover.org" "Tasks" "Now")
+      ("N" "TODO Now (rover)" entry (file+olp "~/org/rover.org" "Tasks" "Now")
            "*** TODO %?\n")
-      ("S" "TODO Soon" entry (file+olp "~/org/rover.org" "Tasks" "Soon")
+      ("S" "TODO Soon (rover)" entry (file+olp "~/org/rover.org" "Tasks" "Soon")
            "*** TODO %?\n")
-      ("L" "TODO Later" entry (file+olp "~/org/rover.org" "Tasks" "Later")
+      ("L" "TODO Later (rover)" entry (file+olp "~/org/rover.org" "Tasks" "Later")
            "*** TODO %?\n")
       ("P" "Work Implementation Plan" entry (file+olp "~/org/rover.org" "Implementation Plans")
            "** %?\n*** Purpose\n\n*** Goals\n\n*** Overview\n\n*** Development Plan\n\n*** Testing and Deployment Plan\n\n*** Documentation Plan\n")
@@ -434,27 +472,42 @@ It looks something like this:
 ** Smart Mode Line
    It could look nicer.
 #+BEGIN_SRC emacs-lisp
-  (use-package smart-mode-line)
-  (require 'smart-mode-line)
-  (setq sml/no-confirm-load-theme t)
-  (setq sml/theme 'light)
-  (sml/setup)
+  ;(use-package smart-mode-line)
+  ;(require 'smart-mode-line)
+  ;(setq sml/no-confirm-load-theme t)
+  ;(setq sml/theme 'light)
+  ;(sml/setup)
+(use-package telephone-line)
+(setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+      telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+      telephone-line-primary-right-separator 'telephone-line-cubed-right
+      telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+(setq ;telephone-line-height 24
+      telephone-line-evil-use-short-tag t)
+(telephone-line-mode t)
 #+END_SRC
 *** TODO Make it look nicer
 ** Font
    A hard choice.
 #+BEGIN_SRC emacs-lisp
-  (if (find-font (font-spec :name "IBM Plex Mono"))
-      (set-face-attribute 'default nil
-        :family "IBM Plex Mono"
-        :height 160
-        :weight 'normal
-        :width 'normal)
-      (set-face-attribute 'default nil
-        :family "Source Code Pro"
-        :height 160
-        :weight 'normal
-        :width 'normal))
+  (cond ((find-font (font-spec :name "PT Mono"))
+         (set-face-attribute 'default nil
+           :family "PT Mono"
+           :height 150
+           :weight 'normal
+           :width 'normal))
+        ((find-font (font-spec :name "IBM Plex Mono"))
+         (set-face-attribute 'default nil
+           :family "IBM Plex Mono"
+           :height 140
+           :weight 'normal
+           :width 'normal))
+        (t 
+         (set-face-attribute 'default nil
+           :family "Source Code Pro"
+           :height 140
+           :weight 'normal
+           :width 'normal)))
 #+END_SRC
 * Keybindings
 ** Leaders
@@ -624,6 +677,21 @@ It looks something like this:
     "w" '(org-capture-refile :wk "refile")
     "k" '(org-capture-kill :wk "kill"))
 #+END_SRC
+** Python
+#+BEGIN_SRC emacs-lisp
+  (defvar python-local-map (make-sparse-keymap) "org local shortcuts")
+  (general-define-key
+    :keymaps 'python-local-map
+    ;:package 'jedi
+    :wk-full-keys nil
+    "j" '(jedi:goto-definition :wk "Goto Definition")
+    "k" '(jedi:goto-definition-pop-marker :wk "Go Back from Definition"))
+  (local-leader
+    :package 'org
+    :major-modes '(python-mode t)
+    :keymaps 'normal
+    "" '(:keymap python-local-map :wk "python local"))
+#+END_SRC
 ** Text
    Just wrap the paragraphs for now, make it much better as needed.
 #+BEGIN_SRC emacs-lisp
@@ -666,6 +734,7 @@ It looks something like this:
   (general-define-key
     :keymaps 'lisp-global-map
     :wk-full-keys nil
+    "k" '(slime :wk "slime")
     "b" '(eval-buffer :wk "eval buffer")
     "e" '(eval-expression :wk "eval expression")
     "f" '(eval-defun :wk "eval defun")
