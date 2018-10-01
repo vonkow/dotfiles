@@ -45,3 +45,14 @@ brew install python
 pip install --upgrade "jedi>=0.9.0" "json-rpc>1.8.1" "service_factory>=0.1.5"
 pip install flake8
 # pip install autoflake  # if we want to cull unused deps
+
+# mu
+brew install offline-imap
+# make a ~/.secure/ dir and add caz@whatever.com.PASSWORD files and get an "app password" from google (not your account's password)
+# also make sure that "python2" is somewhere on your PATH
+brew install mono # for things mu4e needs
+brew install mu --with-emacs # --HEAD # make sure the right emacs is /usr/bin/emacs
+# send smtp
+brew install gnutls
+# make a ~/.authinfo file and populate it with "machine smtp.gmail.com login caz@whatever.com password [app password]"
+brew install imagemagick # because, of course (and for mu4e)

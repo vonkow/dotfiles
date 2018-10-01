@@ -16,6 +16,8 @@ source $ZSH/oh-my-zsh.sh
 
 export LANG=en_US.UTF-8
 
+# offline-imap bs (it needs python 2)
+alias offlineimap="python2.7 /usr/local/Cellar/offlineimap/7.2.1/libexec/offlineimap.py"
 
 # Node cares about this, I guess.
 # Way to be lame, node
@@ -31,4 +33,5 @@ ulimit -n 524288
 
 source $HOME/projects/web/profile
 source $HOME/.env
+
 
