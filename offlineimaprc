@@ -1,0 +1,22 @@
+[general]
+ui=TTYUI
+accounts = Work-Gmail
+autorefresh = 5
+
+[Account Work-Gmail]
+localrepository = Work-Gmail-Local
+remoterepository = Work-Gmail-Remote
+
+[Repository Work-Gmail-Local]
+type = Maildir
+localfolders = ~/.Mail/caz@rover.com
+
+[Repository Work-Gmail-Remote]
+type = Gmail
+remotehost = imap.gmail.com
+remoteuser = caz@rover.com
+remotepassfile = ~/.secure/caz@rover.com.PASSWORD
+realdelete = no
+ssl = yes
+sslcacertfile = /usr/local/etc/openssl/cert.pem
+maxconnections = 1
