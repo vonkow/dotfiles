@@ -486,16 +486,29 @@ It looks something like this:
   (require 'mu4e)
 
   (setq mu4e-maildir "~/.Mail")
-  (setq mu4e-drafts-folder "/[Gmail].Drafts")
-  (setq mu4e-sent-folder "/[Gmail].Sent Mail")
+  (setq mu4e-drafts-folder "/[Gmail].Drafts"
+    mu4e-sent-folder "/[Gmail].All Mail"
+    mu4e-refile-folder "/[Gmail].All Mail"
+    mu4e-trash-folder "/[Gmail].Bin")
   ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
   (setq mu4e-sent-messages-behavior 'delete)
-  ;; allow for updating mail using 'U' in the main view:
+  ;; offlineimap needs old python
   (setq mu4e-get-mail-command "python2.7 /usr/local/Cellar/offlineimap/7.2.1/libexec/offlineimap.py")
+
   ;; shortcuts
   (setq mu4e-maildir-shortcuts
       '( ("/INBOX"               . ?i)
          ("/[Gmail].Sent Mail"   . ?s)))
+
+  ;; bookmarks
+  (setq mu4e-bookmarks `(("\\\\Inbox" "Inbox" ?i)
+    ("flag:flagged" "Flagged messages" ?f)
+    (,(concat "flag:unread AND "
+          "NOT flag:trashed AND "
+          "NOT maildir:/[GMAIL].Spam AND "
+          "NOT maildir:/[GMAIL].Bin")
+      "Unread messages" ?u)))
+
   ;; about ME
   (setq
       user-mail-address "caz@rover.com"
@@ -524,6 +537,13 @@ It looks something like this:
       ;'("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
   (setq mu4e-update-interval 600)
+
+  ;; force gmail to get the fact that something's been archived or starred
+  (add-hook 'mu4e-mark-execute-pre-hook
+          (lambda (mark msg)
+            (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+                  ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+                  ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 
   ;; for sending mail
   (setq message-send-mail-function 'smtpmail-send-it
@@ -762,7 +782,6 @@ It looks something like this:
     (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
     (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
     (add-to-list 'interpreter-mode-alist '("node" . js2-jsx-mode)))
-
 
 #+END_SRC
 ** Prettier

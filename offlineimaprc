@@ -16,7 +16,10 @@ type = Gmail
 remotehost = imap.gmail.com
 remoteuser = caz@rover.com
 remotepassfile = ~/.secure/caz@rover.com.PASSWORD
+folderfilter = lambda folder: folder.startswith('[Gmail]/') and \
+    folder[8:] in ['All Mail', 'Bin', 'Drafts', 'Spam']
+trashfolder = [Gmail]/Bin
 realdelete = no
 ssl = yes
 sslcacertfile = /usr/local/etc/openssl/cert.pem
-maxconnections = 1
+maxconnections = 3
