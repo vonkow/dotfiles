@@ -66,7 +66,7 @@ It looks something like this:
   (setq-default indent-tabs-mode nil)
 
 #+END_SRC
-** And to noises
+** TODO And to noises
    Doubly so.
 #+BEGIN_SRC emacs-lisp
 
@@ -87,6 +87,18 @@ It looks something like this:
     (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
 #+END_SRC
+** Splash Screen / Starting Buffer
+   Start here in =init.org= so that you can always improve things.
+   This will encourage you to be better every day, or at least 
+   maybe you'll remember to add shortcuts to your bindings as you
+   find them.
+   Maybe someday open "important" org stuff too, or is that too much?
+#+BEGIN_SRC emacs-lisp
+
+  (setq inhibit-splash-screen t)
+  (setq initial-buffer-choice "~/init.org")
+
+#+END_SRC
 ** Smooth scrolling
    There's packages that do this if you ever want to add more external bloat
 #+BEGIN_SRC emacs-lisp
@@ -101,23 +113,14 @@ It looks something like this:
    Also hide the mac menu bar for more real estate
 #+BEGIN_SRC emacs-lisp
 
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (toggle-scroll-bar -1)
+  (scroll-bar-mode 0)
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
   (setq ns-auto-hide-menu-bar t)
 
 #+END_SRC
-** Splash Screen / Starting Buffer
-   Start here in =init.org= so that you can always improve things.
-   This will encourage you to be better every day, or at least 
-   maybe you'll remember to add shortcuts to your bindings as you
-   find them.
-   Maybe someday open "important" org stuff too, or is that too much?
+** Window logic
 #+BEGIN_SRC emacs-lisp
-
-  (setq inhibit-splash-screen t)
-  (setq initial-buffer-choice "~/init.org")
-
 #+END_SRC
 * Themes and Fonts
   It doesn't matter cuz it's black and white.
@@ -227,6 +230,9 @@ It looks something like this:
         ;(list (propertize " " 'display '(space :align-to (- right 12)))
               ;'display-time-string)) 
 
+  (setq header-line-format mode-line-format
+    mode-line-format nil)
+
 #+END_SRC
 * Evil
   vi 'til I die
@@ -245,9 +251,9 @@ It looks something like this:
    +Going for opt-in by mode for now, but might+ just go all-in soon.
 #+BEGIN_SRC emacs-lisp
 
-  (use-package evil-collection
-    :custom (evil-collection-setup-minibuffer t)
-    :init (evil-collection-init))
+  ;(use-package evil-collection
+    ;:custom (evil-collection-setup-minibuffer t)
+    ;:init (evil-collection-init))
 
 #+END_SRC
 ** Extra Evil Packages
@@ -267,18 +273,28 @@ It looks something like this:
   Leaders precipitate Followers, Global and Local.
 #+BEGIN_SRC emacs-lisp
 
-  (use-package general :demand)
+  (use-package general 
+    :demand
+    :config
+    (setq general-override-states '(insert
+                                    emacs
+                                    hybrid
+                                    normal
+                                    visual
+                                    motion
+                                    operator
+                                    replace))
 
-  (general-create-definer global-leader 
-    :keymaps 'normal 
-    :prefix "SPC")
-  (global-leader
-    "" '(nil :which-key "global leader")
-    "SPC" '(execute-extended-command :which-key "execute"))
-
+    (general-create-definer global-leader
+      :states '(normal visual motion)
+      :keymaps 'override 
+      :prefix "SPC")
+    (global-leader
+      "" '(nil :which-key "global leader")
+      "SPC" '(execute-extended-command :which-key "execute")))
   (general-create-definer local-leader 
-    :keymaps 'normal 
-    :prefix ",")
+      :keymaps 'normal
+      :prefix ",")
   (local-leader "" '(nil :wk "local leader"))
 
 #+END_SRC
@@ -678,7 +694,6 @@ It looks something like this:
       (add-to-list 'company-backends 'company-jedi))
     (add-hook 'python-mode-hook 'config/enable-company-jedi))
 
-  (use-package company-flow)
 
   (use-package company
     :delight company-mode
@@ -687,14 +702,14 @@ It looks something like this:
     :bind
     ("M-/" . company-complete-common)
     :config
-    (add-to-list 'company-backends 'company-flow)
+    ;(add-to-list 'company-backends 'company-flow)
     (setq company-dabbrev-downcase nil)
     (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
     (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
     (define-key company-active-map (kbd "S-TAB") 'company-select-previous)
     (define-key company-active-map (kbd "<backtab>") 'company-select-previous))
 
-  (require 'company)
+  ;(use-package company-flow)
 
 #+END_SRC
 * Checking
@@ -702,6 +717,7 @@ It looks something like this:
 #+BEGIN_SRC emacs-lisp
 
   (use-package flycheck
+    :ensure t
     :config
     (setq flycheck-check-syntax-automatically '(mode-enabled save))
     (setq flycheck-python-flake8-executable "flake8")
@@ -715,17 +731,17 @@ It looks something like this:
     (flycheck-add-mode 'javascript-eslint 'js-mode)
     (flycheck-add-mode 'javascript-eslint 'jsx-mode)
     ;(flycheck-add-mode 'javascript-flow 'flow-minor-mode)
-    ;(flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
-    (flycheck-add-mode 'javascript-eslint 'flow-minor-mode))
-
-  (add-hook 'python-mode-hook 'flycheck-mode)
-  (add-hook 'go-mode-hook 'flycheck-mode)
-  (add-hook 'sh-mode-hook 'flycheck-mode)
-  (add-hook 'rst-mode-hook 'flycheck-mode)
-  (add-hook 'js2-mode-hook 'flycheck-mode)
-  (add-hook 'web-mode-hook 'flycheck-mode)
-  (add-hook 'mmm-mode-hook 'flycheck-mode)
-  (add-hook 'js-mode-hook 'flycheck-mode)
+    ;;(flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
+    ;(flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+    (add-hook 'after-init-hook #'global-flycheck-mode))
+    ;(add-hook 'python-mode-hook 'flycheck-mode)
+    ;(add-hook 'go-mode-hook 'flycheck-mode)
+    ;(add-hook 'sh-mode-hook 'flycheck-mode)
+    ;(add-hook 'rst-mode-hook 'flycheck-mode)
+    ;(add-hook 'js2-mode-hook 'flycheck-mode)
+    ;(add-hook 'web-mode-hook 'flycheck-mode)
+    ;(add-hook 'mmm-mode-hook 'flycheck-mode)
+    ;(add-hook 'js-mode-hook 'flycheck-mode))
 
   ;; use local eslint from node_modules before global
   ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
@@ -773,8 +789,9 @@ It looks something like this:
 
   (use-package web-mode)
   (use-package mmm-mode)
-  (use-package rjsx-mode)
+  (use-package rjsx-mode :ensure t)
   (use-package js2-mode
+    :ensure t
     :after (rjsx-mode)
     :config
     (setq js2-basic-offset 2)
