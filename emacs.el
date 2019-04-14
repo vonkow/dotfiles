@@ -1,6 +1,8 @@
 
 ;; 1. Init
 
+;; Follow your symlinks frist and foremost
+(setq vc-follow-symlinks t)
 
 ;; Add other package repos
 (require 'package)
@@ -46,7 +48,7 @@
 
 ;; Start here
 (setq inhibit-splash-screen t
-      initial-buffer-choice "~/.emacs")
+      initial-buffer-choice "~/.emacs.el")
 
 ;; utf-8
 (setq locale-coding-system 'utf-8)
@@ -154,7 +156,7 @@
 
 ;; Buffers
 
-(defvar buffer-global-map (make-sparse-keymap) "buffer shortcuts")
+(defvar buffer-global-map (make-sparse-keymap) "Buffer shortcuts.")
 (global-leader "b" '(:keymap buffer-global-map :wk "buffers"))
 (general-define-key
   :keymaps 'buffer-global-map
@@ -278,6 +280,11 @@
   (setq jedi:complete-on-dot t)
   (add-hook 'python-mode-hook 'jedi:setup))
 
+(use-package elpy
+  :config
+  (elpy-enable)
+  (elpy-use-ipython))
+
 
 ;; Checking
 (use-package flycheck
@@ -353,10 +360,11 @@
 
 
 ;; Uncomment when ready
-;(with-eval-after-load 'flycheck
+(with-eval-after-load 'flycheck
   ;(flycheck-add-mode 'javascript-flow 'flow-minor-mode)
-  ;(flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
-  ;(flycheck-add-next-checker 'javascript-flow 'javascript-eslint))
+  (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+  ;(flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
+  )
 ;;
 ;;(with-eval-after-load 'company
   ;;(add-to-list 'company-backends 'company-flow))
@@ -368,3 +376,75 @@
 ;(require 'flowmacs)
 
 ;(add-hook 'rjsx-mode-hook 'flowmacs-mode)
+
+;; org mode
+
+(use-package org
+  :ensure t
+  :init ()
+  :config
+  (setq org-capture-templates
+        '(("t" "TODO" entry (file+olp+datetree "~/org/rover.org")
+           "**** TODO %?\n")
+          ("i" "IP Review" entry (file+headline "~/org/rover.org" "IP Reviews")
+           "** TODO %?\n")))
+  (setq org-agenda-files '("~/org/rover.org"))
+  (setq org-archive-location "%s_archive::datetree/")
+  (general-define-key
+    :package 'org
+    :major-modes 'org-mode
+    :states 'normal
+    :keymaps 'org-mode-map
+    "TAB" 'org-cycle
+    "t" 'org-todo)
+  )
+
+(defvar org-global-map (make-sparse-keymap) "org shortcuts")
+
+(global-leader "o" '(:keymap org-global-map :which-key "org"))
+  (general-define-key
+    :keymaps 'org-global-map
+    :wk-full-keys nil
+      "c" '(org-capture :wk "capture")
+      "l" '(org-store-link :wk "store link")
+      "a" '(org-agenda :wk "agenda")
+      "b" '(org-iswitchb :wk "switch buffers"))
+
+(defvar org-local-map (make-sparse-keymap) "org local shortcuts")
+
+(general-define-key
+  :keymaps 'org-local-map
+  :package 'org
+  :wk-full-keys nil
+  "," '(org-ctrl-c-ctrl-c :wk "C-c C-c")
+  "/" '(org-sparse-tree :wk "sparse tree")
+  "f" '(helm-org-in-buffer-headings :wk "find heading") ; gonna do an
+  "g" '(org-mark-ring-goto :wk "goto back") ; experiment here
+  "p" '(org-set-property :wk "set property")
+  "r" '(org-priority :wk "set priority")
+  "t" '(org-set-tags-command :wk "set tags")
+  "d" '(org-deadline :wk "Deadline")
+  "s" '(org-archive-subtree :wk "Archive Subtree")
+  "z" '(org-schedule :wk "Schedule")
+  ">" '(outline-demote :wk "Outline Demote")
+  "<" '(outline-promote :wk "Outline Promote")
+  "e" '(org-export-dispatch :wk "Export"))
+
+(local-leader
+  :package 'org
+  :major-modes '(org-mode t)
+  :keymaps 'normal
+  "" '(:keymap org-local-map :wk "org local"))
+
+(local-leader
+  :package 'org
+  :definer 'minor-mode
+  :states 'normal
+  :keymaps 'org-capture-mode
+  "," '(org-capture-finalize :wk "finish")
+  "c" '(org-capture-finalize :wk "finish")
+  "w" '(org-capture-refile :wk "refile")
+  "k" '(org-capture-kill :wk "kill"))
+
+(provide 'emacs)
+;;; emacs.el ends here
